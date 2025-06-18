@@ -1,29 +1,42 @@
 <DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCRC</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="loading-container">
-        <!-- Loading images will be inserted here dynamically -->
-    </div>
+    <html lang="en">
 
-    <div id="content" style="display: none;">
-        <div id="game-container">
-            <div id="box-container">
-                <img src="assets/box/box1.png" alt="Box" id="animated-box" class="box-image">
-            </div>
-            <div id="reward-container">
-                <img src="assets/Tacobell_R_0.png" alt="Red Taco" class="reward-image" id="red-taco">
-                <img src="assets/Tacobell-G_0.png" alt="Green Taco" class="reward-image" id="green-taco">
-                <img src="assets/Brown Potion_0.png" alt="Brown Potion" class="reward-image" id="brown-potion">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,
+                        initial-scale=1,
+                        maximum-scale=1,
+                        minimum-scale=1,
+                        user-scalable=no">
+        <title>TCRC</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <div id="loading-container">
+            <!-- Loading images will be inserted here dynamically -->
+        </div>
+
+        <div id="content" style="display: none;">
+            <div id="game-container">
+                <div id="btn-container">
+                    <img src="assets/btn/Snake1.png" alt="Snake" id="snake-btn" class="btn-image"
+                        style="transform: translateY(50px);">
+                    <img src="assets/btn/Q1.png" alt="Q" id="q-btn" class="btn-image"
+                        style="transform: translateY(-50px);">
+                    <img src="assets/btn/Sun1.png" alt="Sun" id="sun-btn" class="btn-image"
+                        style="transform: translateY(50px);">
+                </div>
+                <div id="reward-container">
+                    <img src="assets/pepper19.png" alt="Pepper" class="reward-image" id="pepper">
+                    <img src="assets/Brown_Potion_0.png" alt="Brown Potion" class="reward-image" id="brown-potion">
+                    <img src="assets/cum19.png" alt="Cum" class="reward-image" id="cum">
+                </div>
             </div>
         </div>
-    </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+        <script src="script.js"></script>
+    </body>
+
+    </html>

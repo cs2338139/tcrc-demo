@@ -1,16 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loadingContainer = document.getElementById('loading-container');
     const content = document.getElementById('content');
-    const boxContainer = document.getElementById('box-container');
-    const animatedBox = document.getElementById('animated-box');
-    const redTaco = document.getElementById('red-taco');
-    const greenTaco = document.getElementById('green-taco');
+    const btnContainer = document.getElementById('btn-container');
+    const pepper = document.getElementById('pepper');
+    const cum = document.getElementById('cum');
     const brownPotion = document.getElementById('brown-potion');
     const rewardContainer = document.getElementById('reward-container');
+    const snakeBtn = document.getElementById('snake-btn');
+    const qBtn = document.getElementById('q-btn');
+    const sunBtn = document.getElementById('sun-btn');
 
     // 隱藏所有獎勵圖片
-    redTaco.classList.add('hidden');
-    greenTaco.classList.add('hidden');
+    pepper.classList.add('hidden');
+    cum.classList.add('hidden');
     brownPotion.classList.add('hidden');
 
     // 定義載入動畫圖片數量
@@ -26,18 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingContainer.appendChild(img);
         loadingImages.push(img);
     }
-
-    // 盒子圖片序列
-    const boxImages = [
-        'assets/box/box1.png',
-        'assets/box/box2.png',
-        'assets/box/box3.png',
-        'assets/box/box4.png',
-        'assets/box/box5.png',
-        'assets/box/box6.png',
-        'assets/box/box7.png',
-        'assets/box/box8.png'
-    ];
 
     // 顯示載入動畫
     let currentLoadingIndex = 0;
@@ -71,131 +61,121 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 盒子自動輪播動畫
-    let currentBoxIndex = 0;
-    let boxAnimationInterval;
-
-    function startBoxAnimation() {
-        boxAnimationInterval = setInterval(() => {
-            currentBoxIndex = (currentBoxIndex + 1) % boxImages.length;
-            animatedBox.src = boxImages[currentBoxIndex];
-        }, 200);
-    }
-
-    // 盒子點擊事件
-    boxContainer.addEventListener('click', function() {
-        // 停止盒子輪播動畫
-        clearInterval(boxAnimationInterval);
-
-
-        // 隱藏盒子
-        boxContainer.classList.add('hidden');
-
-
-        // 根據機率顯示獎勵
-        showRandomReward();
-    });
-
-    // 根據機率顯示獎勵
-    function showRandomReward() {
-        // 生成一個0到100的隨機數
-        const randomChance = Math.random() * 100;
-
-        // 清除任何存在的雙獎勵元素
-        const existingDualReward = document.querySelector('.dual-reward');
-        if (existingDualReward) {
-            existingDualReward.remove();
-        }
-
-        // 重設所有獎勵為隱藏狀態
-        redTaco.classList.add('hidden');
-        redTaco.classList.remove('visible');
-        greenTaco.classList.add('hidden');
-        greenTaco.classList.remove('visible');
-        brownPotion.classList.add('hidden');
-        brownPotion.classList.remove('visible');
-
-        // 移除它們可能存在的任何父元素關係
-        if (redTaco.parentElement !== rewardContainer) {
-            rewardContainer.appendChild(redTaco);
-        }
-        if (greenTaco.parentElement !== rewardContainer) {
-            rewardContainer.appendChild(greenTaco);
-        }
-
-        // 根據機率決定獎勵
-        if (randomChance < 40) {
-            // 40%機率 - 紅色塔可
-            redTaco.classList.remove('hidden');
-            redTaco.classList.add('visible');
-        } else if (randomChance < 80) {
-            // 40%機率 - 綠色塔可
-            greenTaco.classList.remove('hidden');
-            greenTaco.classList.add('visible');
-        } else if (randomChance < 98) {
-            // 18%機率 - 紅色和綠色塔可並排
-            const dualRewardDiv = document.createElement('div');
-            dualRewardDiv.className = 'dual-reward';
-
-            // 將塔可添加到雙獎勵容器
-            dualRewardDiv.appendChild(redTaco);
-            dualRewardDiv.appendChild(greenTaco);
-
-            rewardContainer.appendChild(dualRewardDiv);
-
-            // 移除隱藏類別並添加可見類別
-            redTaco.classList.remove('hidden');
-            redTaco.classList.add('visible');
-            greenTaco.classList.remove('hidden');
-            greenTaco.classList.add('visible');
-
-            // 顯示雙獎勵容器
-            setTimeout(() => {
-                dualRewardDiv.style.opacity = 1;
-            }, 10);
-        } else {
-            // 2%機率 - 棕色藥水
-            brownPotion.classList.remove('hidden');
-            brownPotion.classList.add('visible');
-        }
-
-        // 5秒後重置遊戲
-        // setTimeout(resetGame, 5000);
-    }
-
-    // 重置遊戲狀態
-    function resetGame() {
-        // 隱藏所有獎勵
-        redTaco.classList.add('hidden');
-        redTaco.classList.remove('visible');
-        greenTaco.classList.add('hidden');
-        greenTaco.classList.remove('visible');
-        brownPotion.classList.add('hidden');
-        brownPotion.classList.remove('visible');
-
-        // 清除任何存在的雙獎勵元素
-        const existingDualReward = document.querySelector('.dual-reward');
-        if (existingDualReward) {
-            existingDualReward.style.opacity = 0;
-
-            // 在淡出動畫完成後移除雙獎勵元素
-            setTimeout(() => {
-                existingDualReward.remove();
-
-                // 將塔可放回原來的父元素
-                if (redTaco.parentElement !== rewardContainer) {
-                    rewardContainer.appendChild(redTaco);
+    // 定義獎勵顯示配置
+    const REWARDS_CONFIG = {
+        snake: {
+            maxClicks: 4,
+            reward: () => showReward(['cum'])
+        },
+        q: {
+            maxClicks: 4,
+            reward: () => {
+                const random = Math.random();
+                if (random < 0.45) {
+                    showReward(['pepper']);
+                } else if (random < 0.9) {
+                    showReward(['cum']);
+                } else if (random < 0.97) {
+                    showReward(['pepper', 'cum'], { position: 'relative' });
+                } else {
+                    showReward(
+                        ['pepper', 'cum', 'brown-potion'],
+                        {
+                            pepper: { position: 'relative', transform: 'translateY(50px)' },
+                            cum: { position: 'relative', transform: 'translateY(50px)' },
+                            'brown-potion': { position: 'relative', transform: 'translateY(-50px)' }
+                        }
+                    );
                 }
-                if (greenTaco.parentElement !== rewardContainer) {
-                    rewardContainer.appendChild(greenTaco);
-                }
-            }, 300);
+            }
+        },
+        sun: {
+            maxClicks: 4,
+            reward: () => showReward(['pepper'])
+        }
+    };
+
+    // 點擊計數器
+    const clickCounts = {
+        snake: 0,
+        q: 0,
+        sun: 0
+    };
+
+    // 檢查特殊組合
+    function checkSpecialCombinations() {
+        // 規則1: 太陽、蛇、問號各按2次 = 紅+綠
+        if (clickCounts.sun === 2 && clickCounts.snake === 2 ) {
+            showReward(['pepper', 'cum'], { position: 'relative' });
+            // 重置計數器
+            resetClickCounts();
+            return true;
         }
 
-        // 顯示盒子並重新開始輪播
-        animatedBox.classList.remove('hidden');
-        startBoxAnimation();
+        // 規則2: 問號、太陽、蛇各按4次 = 紅+綠+shot
+        if (clickCounts.sun === 3 && clickCounts.snake === 3 && clickCounts.q === 3) {
+            showReward(
+                ['pepper', 'cum', 'brown-potion'],
+                {
+                    pepper: { position: 'relative', transform: 'translateY(50px)' },
+                    cum: { position: 'relative', transform: 'translateY(50px)' },
+                    'brown-potion': { position: 'relative', transform: 'translateY(-50px)' }
+                }
+            );
+            // 重置計數器
+            resetClickCounts();
+            return true;
+        }
+
+        return false;
     }
+
+    // 重置所有計數器
+    function resetClickCounts() {
+        Object.keys(clickCounts).forEach(key => {
+            clickCounts[key] = 0;
+        });
+    }
+
+    // 通用顯示獎勵函數
+    function showReward(items, styles = {}) {
+        items.forEach(item => {
+            const element = document.getElementById(item);
+            element.classList.remove('hidden');
+
+            // 如果有特定樣式，則應用樣式
+            if (styles[item]) {
+                Object.assign(element.style, styles[item]);
+            } else if (typeof styles === 'object' && !Array.isArray(styles)) {
+                Object.assign(element.style, styles);
+            }
+        });
+        btnContainer.classList.add('hidden');
+    }
+
+    // 通用按鈕點擊處理函數
+    function handleButtonClick(buttonType) {
+        console.log(buttonType);
+
+        clickCounts[buttonType]++;
+        console.log(clickCounts);
+
+        // 先檢查特殊組合
+        if (checkSpecialCombinations()) {
+            return;
+        }
+
+        // 如果沒有觸發特殊組合，檢查單個按鈕的最大點擊次數
+        if (clickCounts[buttonType] >= REWARDS_CONFIG[buttonType].maxClicks) {
+            clickCounts[buttonType] = 0;
+            REWARDS_CONFIG[buttonType].reward();
+        }
+    }
+
+    // 綁定按鈕點擊事件
+    snakeBtn.addEventListener('click', () => handleButtonClick('snake'));
+    qBtn.addEventListener('click', () => handleButtonClick('q'));
+    sunBtn.addEventListener('click', () => handleButtonClick('sun'));
 
     // 開始載入動畫
     setTimeout(showNextLoadingImage, 500);
