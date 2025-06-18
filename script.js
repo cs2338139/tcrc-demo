@@ -15,6 +15,60 @@ document.addEventListener('DOMContentLoaded', function() {
     cum.classList.add('hidden');
     brownPotion.classList.add('hidden');
 
+    const snakeBtnList=[
+        'assets/btn/Snake1.png',
+        'assets/btn/Snake2.png',
+        'assets/btn/Snake3.png',
+        'assets/btn/Snake4.png',
+        'assets/btn/Snake5.png',
+        'assets/btn/Snake6.png',
+        'assets/btn/Snake7.png',
+        'assets/btn/Snake8.png',
+        'assets/btn/Snake9.png',
+        'assets/btn/Snake10.png',
+        'assets/btn/Snake11.png',
+        'assets/btn/Snake12.png',
+        'assets/btn/Snake13.png',
+        'assets/btn/Snake14.png',
+        'assets/btn/Snake15.png',
+        'assets/btn/Snake16.png',
+    ]
+    const qBtnList=[
+        'assets/btn/Q1.png',
+        'assets/btn/Q2.png',
+        'assets/btn/Q3.png',
+        'assets/btn/Q4.png',
+        'assets/btn/Q5.png',
+        'assets/btn/Q6.png',
+        'assets/btn/Q7.png',
+        'assets/btn/Q8.png',
+        'assets/btn/Q9.png',
+        'assets/btn/Q10.png',
+        'assets/btn/Q11.png',
+        'assets/btn/Q12.png',
+        'assets/btn/Q13.png',
+        'assets/btn/Q14.png',
+        'assets/btn/Q15.png',
+        'assets/btn/Q16.png',
+    ]
+    const sunBtnList=[
+        'assets/btn/Sun1.png',
+        'assets/btn/Sun2.png',
+        'assets/btn/Sun3.png',
+        'assets/btn/Sun4.png',
+        'assets/btn/Sun5.png',
+        'assets/btn/Sun6.png',
+        'assets/btn/Sun7.png',
+        'assets/btn/Sun8.png',
+        'assets/btn/Sun9.png',
+        'assets/btn/Sun10.png',
+        'assets/btn/Sun11.png',
+        'assets/btn/Sun12.png',
+        'assets/btn/Sun13.png',
+        'assets/btn/Sun14.png',
+        'assets/btn/Sun15.png',
+        'assets/btn/Sun16.png',
+    ]
     // 定義載入動畫圖片數量
     const totalLoadingImages = 8;
 
@@ -155,10 +209,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 通用按鈕點擊處理函數
     function handleButtonClick(buttonType) {
-        console.log(buttonType);
+        // console.log(buttonType);
 
         clickCounts[buttonType]++;
-        console.log(clickCounts);
+        // console.log(clickCounts);
 
         // 先檢查特殊組合
         if (checkSpecialCombinations()) {
@@ -172,10 +226,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 綁定按鈕點擊事件
-    snakeBtn.addEventListener('click', () => handleButtonClick('snake'));
-    qBtn.addEventListener('click', () => handleButtonClick('q'));
-    sunBtn.addEventListener('click', () => handleButtonClick('sun'));
+    // 按鈕動畫狀態
+    const buttonStates = {
+        snake: { isAnimating: false, preloadedImages: [] },
+        q: { isAnimating: false, preloadedImages: [] },
+        sun: { isAnimating: false, preloadedImages: [] }
+    };
+
+    // 預載按鈕圖片
+    function preloadButtonImages() {
+        // 預載蛇按鈕圖片
+        snakeBtnList.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            buttonStates.snake.preloadedImages.push(img);
+        });
+
+        // 預載問號按鈕圖片
+        qBtnList.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            buttonStates.q.preloadedImages.push(img);
+        });
+
+        // 預載太陽按鈕圖片
+        sunBtnList.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            buttonStates.sun.preloadedImages.push(img);
+        });
+    }
+
+    // 播放按鈕動畫
+    function playButtonAnimation(buttonType, button, imageList) {
+        if (buttonStates[buttonType].isAnimating) return;
+
+        buttonStates[buttonType].isAnimating = true;
+        button.style.pointerEvents = 'none'; // 鎖定按鈕
+
+        let frameIndex = 0;
+        const framesPerSecond = 16; // 16張圖片在0.5秒內播完
+        const interval = 300 / framesPerSecond;
+
+        const animate = () => {
+            if (frameIndex < imageList.length) {
+                button.src = imageList[frameIndex];
+                frameIndex++;
+                setTimeout(animate, interval);
+            } else {
+                // 動畫結束，重置狀態
+                button.src = imageList[0];
+                buttonStates[buttonType].isAnimating = false;
+                button.style.pointerEvents = 'auto'; // 解鎖按鈕
+
+                // 處理按鈕點擊邏輯
+                handleButtonClick(buttonType);
+            }
+        };
+
+        animate();
+    }
+
+    // 修改按鈕點擊事件綁定
+    snakeBtn.addEventListener('click', () => playButtonAnimation('snake', snakeBtn, snakeBtnList));
+    qBtn.addEventListener('click', () => playButtonAnimation('q', qBtn, qBtnList));
+    sunBtn.addEventListener('click', () => playButtonAnimation('sun', sunBtn, sunBtnList));
+
+    // 在頁面加載時預載按鈕圖片
+    preloadButtonImages();
 
     // 開始載入動畫
     setTimeout(showNextLoadingImage, 500);
