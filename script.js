@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let frameIndex = 0;
         const framesPerSecond = 16; // 16張圖片在0.5秒內播完
-        const interval = 300 / framesPerSecond;
+        const interval = 500 / framesPerSecond;
 
         const animate = () => {
             if (frameIndex < imageList.length) {
