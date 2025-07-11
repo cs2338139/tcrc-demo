@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const snakeBtnGroup = document.getElementById('snake-btn-group');
     const qBtnGroup = document.getElementById('q-btn-group');
     const sunBtnGroup = document.getElementById('sun-btn-group');
+    const snakeCircleContainer = document.getElementById('snake-circle-container');
 
     const timer1 = document.getElementById('timer-1');
     const timer2 = document.getElementById('timer-2');
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(showNextLoadingImage, 500);
     }
 
-    function handleButtonClick(buttonType) {
+    async function handleButtonClick(buttonType) {
         function updateTimerState() {
             if (TIMER_STATES.timer1 === 'empty') {
                 TIMER_STATES.timer1 = buttonType;
@@ -94,7 +95,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (TIMER_STATES.timer4 === 'empty')  return;
 
+        const framesPerSecond = 12;
+        const interval = 1000 / framesPerSecond;
+        let currentImageIndex = 0;
+        let previousImageIndex = null;
 
+
+        const animate = async () => {
+            const snakeCircleImages = Array.from(snakeCircleContainer.children);
+            if (currentImageIndex < snakeCircleImages.length) {
+                const currentImage = snakeCircleImages[currentImageIndex];
+
+                currentImage.classList.add('active');
+                if (previousImageIndex) {
+                    previousImageIndex.classList.remove('active');
+                }
+                previousImageIndex = currentImage;
+                currentImageIndex++;
+
+                await new Promise(resolve => setTimeout(resolve, interval));
+                await animate();
+            }
+        };
+
+        await animate();
+        console.log('動畫結束');
     }
 
     function playButtonAnimation(buttonType, buttonGroup) {
