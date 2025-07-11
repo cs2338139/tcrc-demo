@@ -70,6 +70,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleButtonClick(buttonType) {
+        function updateTimerState() {
+            if (TIMER_STATES.timer1 === 'empty') {
+                TIMER_STATES.timer1 = buttonType;
+            } else if (TIMER_STATES.timer2 === 'empty') {
+                TIMER_STATES.timer2 = buttonType;
+            } else if (TIMER_STATES.timer3 === 'empty') {
+                TIMER_STATES.timer3 = buttonType;
+            } else if (TIMER_STATES.timer4 === 'empty') {
+                TIMER_STATES.timer4 = buttonType;
+            }
+        }
+
         function updateTimerImage() {
             timer1.src = `assets/timer/${TIMER_STATES.timer1}.webp`;
             timer2.src = `assets/timer/${TIMER_STATES.timer2}.webp`;
@@ -77,17 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
             timer4.src = `assets/timer/${TIMER_STATES.timer4}.webp`;
         }
 
-        if (TIMER_STATES.timer1 === 'empty') {
-            TIMER_STATES.timer1 = buttonType;
-        } else if (TIMER_STATES.timer2 === 'empty') {
-            TIMER_STATES.timer2 = buttonType;
-        } else if (TIMER_STATES.timer3 === 'empty') {
-            TIMER_STATES.timer3 = buttonType;
-        } else if (TIMER_STATES.timer4 === 'empty') {
-            TIMER_STATES.timer4 = buttonType;
-        }
-
+        updateTimerState();
         updateTimerImage();
+
+        if (TIMER_STATES.timer4 === 'empty')  return;
+
+
     }
 
     function playButtonAnimation(buttonType, buttonGroup) {
