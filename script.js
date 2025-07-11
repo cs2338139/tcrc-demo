@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sunBtnGroup = document.getElementById('sun-btn-group');
     const snakeCircleContainer = document.getElementById('snake-circle-container');
 
+    const timersContainer = document.getElementById('timers-container');
     const timer1 = document.getElementById('timer-1');
     const timer2 = document.getElementById('timer-2');
     const timer3 = document.getElementById('timer-3');
@@ -90,10 +91,39 @@ document.addEventListener('DOMContentLoaded', function() {
             timer4.src = `assets/timer/${TIMER_STATES.timer4}.webp`;
         }
 
+        async function lockBtnContainer() {
+            await new Promise(resolve => {
+                btnContainer.style.pointerEvents = 'none';
+                resolve();
+            });
+        }
+
+        async function timersContainerShining() {
+            timersContainer.style.opacity = 0;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            timersContainer.style.opacity = 1;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            timersContainer.style.opacity = 0;
+            await new Promise(resolve => setTimeout(resolve, 500));
+            timersContainer.style.opacity = 1;
+        }
+
+        async function allContainerOpacity() {
+            await new Promise(resolve => {
+                btnContainer.style.opacity = 0;
+                timersContainer.style.opacity = 0;
+                resolve();
+            });
+        }
+
         updateTimerState();
         updateTimerImage();
 
         if (TIMER_STATES.timer4 === 'empty')  return;
+
+        await lockBtnContainer();
+        await timersContainerShining();
+        await allContainerOpacity();
 
         const framesPerSecond = 12;
         const interval = 1000 / framesPerSecond;
@@ -119,11 +149,11 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         await animate();
-        console.log('動畫結束');
+
+
     }
 
     function playButtonAnimation(buttonType, buttonGroup) {
-        console.log(buttonType, buttonGroup);
         if (BUTTON_STATES[buttonType].isAnimating) return;
         const imageList = Array.from(buttonGroup.children);
 
@@ -166,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
     qBtnGroup.addEventListener('click', () => playButtonAnimation('q', qBtnGroup));
     sunBtnGroup.addEventListener('click', () => playButtonAnimation('sun', sunBtnGroup));
 
-    loadingAnimation();
+    // loadingAnimation();
 
-    console.log(snakeBtnGroup);
 });

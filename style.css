@@ -57,6 +57,7 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-around;
+    transition: opacity 0.4s ease;
 
     .timer-item-container {
       width: 80px;
@@ -100,6 +101,7 @@ body {
     display: flex;
     width: 100%;
     justify-content: space-around;
+    transition: opacity 0.4s ease;
 
     .btn-group {
       border: 1px solid green;
