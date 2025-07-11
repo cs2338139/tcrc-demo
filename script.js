@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const pepper = document.getElementById('pepper');
     const cum = document.getElementById('cum');
     const brownPotion = document.getElementById('brown-potion');
-    const rewardContainer = document.getElementById('reward-container');
     const snakeBtn = document.getElementById('snake-btn');
     const qBtn = document.getElementById('q-btn');
     const sunBtn = document.getElementById('sun-btn');
@@ -14,6 +13,49 @@ document.addEventListener('DOMContentLoaded', function() {
     pepper.classList.add('hidden');
     cum.classList.add('hidden');
     brownPotion.classList.add('hidden');
+
+    // 載入動畫
+    (function(){
+        const totalLoadingImages = 8;
+        const loadingImages = [];
+        for (let i = 1; i <= totalLoadingImages; i++) {
+            const img = document.createElement('img');
+            img.src = `assets/loading/loading${i}.png`;
+            img.alt = `Loading ${i}`;
+            img.classList.add('loading-image');
+            loadingContainer.appendChild(img);
+            loadingImages.push(img);
+        }
+
+        let currentLoadingIndex = 0;
+        let previousLoadingImage = null;
+
+        function showNextLoadingImage() {
+            if (currentLoadingIndex < totalLoadingImages) {
+                const currentImage = loadingImages[currentLoadingIndex];
+                currentImage.classList.add('active');
+
+                setTimeout(() => {
+                    if (previousLoadingImage) {
+                        previousLoadingImage.classList.remove('active');
+                    }
+                    previousLoadingImage = currentImage;
+                }, 100);
+
+                currentLoadingIndex++;
+                setTimeout(showNextLoadingImage, 200);
+            } else {
+                setTimeout(() => {
+                    loadingContainer.style.display = 'none';
+                    content.style.display = 'block';
+
+                    startBoxAnimation();
+                }, 200);
+            }
+        }
+
+        setTimeout(showNextLoadingImage, 500);
+    })();
 
     const snakeBtnList=[
         'assets/btn/Snake1.png',
@@ -69,51 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'assets/btn/Sun15.png',
         'assets/btn/Sun16.png',
     ]
-    // 定義載入動畫圖片數量
-    const totalLoadingImages = 8;
-
-    // 創建並預載所有載入動畫圖片
-    const loadingImages = [];
-    for (let i = 1; i <= totalLoadingImages; i++) {
-        const img = document.createElement('img');
-        img.src = `assets/loading/loading${i}.png`;
-        img.alt = `Loading ${i}`;
-        img.classList.add('loading-image');
-        loadingContainer.appendChild(img);
-        loadingImages.push(img);
-    }
-
-    // 顯示載入動畫
-    let currentLoadingIndex = 0;
-    let previousLoadingImage = null;
-
-    function showNextLoadingImage() {
-        if (currentLoadingIndex < totalLoadingImages) {
-            // 顯示當前載入圖片
-            const currentImage = loadingImages[currentLoadingIndex];
-            currentImage.classList.add('active');
-
-            // 在轉換完成後移除前一個圖片的active類別
-            setTimeout(() => {
-                if (previousLoadingImage) {
-                    previousLoadingImage.classList.remove('active');
-                }
-                previousLoadingImage = currentImage;
-            }, 300);
-
-            currentLoadingIndex++;
-            setTimeout(showNextLoadingImage, 500);
-        } else {
-            // 載入動畫完成
-            setTimeout(() => {
-                loadingContainer.style.display = 'none';
-                content.style.display = 'block';
-
-                // 開始盒子輪播動畫
-                startBoxAnimation();
-            }, 200);
-        }
-    }
 
     // 定義獎勵顯示配置
     const REWARDS_CONFIG = {
@@ -294,7 +291,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 在頁面加載時預載按鈕圖片
     preloadButtonImages();
-
-    // 開始載入動畫
-    setTimeout(showNextLoadingImage, 500);
 });
