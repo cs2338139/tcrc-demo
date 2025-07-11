@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const pepper = document.getElementById('pepper');
     const cum = document.getElementById('cum');
     const brownPotion = document.getElementById('brown-potion');
-    const snakeBtn = document.getElementById('snake-btn');
-    const qBtn = document.getElementById('q-btn');
-    const sunBtn = document.getElementById('sun-btn');
+    const snakeBtnGroup = document.getElementById('snake-btn-group');
+    const qBtnGroup = document.getElementById('q-btn-group');
+    const sunBtnGroup = document.getElementById('sun-btn-group');
 
     // 隱藏所有獎勵圖片
     pepper.classList.add('hidden');
@@ -15,102 +15,48 @@ document.addEventListener('DOMContentLoaded', function() {
     brownPotion.classList.add('hidden');
 
     // 載入動畫
-    (function(){
-        const totalLoadingImages = 8;
-        const loadingImages = [];
-        for (let i = 1; i <= totalLoadingImages; i++) {
-            const img = document.createElement('img');
-            img.src = `assets/loading/loading${i}.png`;
-            img.alt = `Loading ${i}`;
-            img.classList.add('loading-image');
-            loadingContainer.appendChild(img);
-            loadingImages.push(img);
-        }
+    // (function(){
+    //     const totalLoadingImages = 8;
+    //     const loadingImages = [];
+    //     for (let i = 1; i <= totalLoadingImages; i++) {
+    //         const img = document.createElement('img');
+    //         img.src = `assets/loading/loading${i}.png`;
+    //         img.alt = `Loading ${i}`;
+    //         img.classList.add('loading-image');
+    //         loadingContainer.appendChild(img);
+    //         loadingImages.push(img);
+    //     }
 
-        let currentLoadingIndex = 0;
-        let previousLoadingImage = null;
+    //     let currentLoadingIndex = 0;
+    //     let previousLoadingImage = null;
 
-        function showNextLoadingImage() {
-            if (currentLoadingIndex < totalLoadingImages) {
-                const currentImage = loadingImages[currentLoadingIndex];
-                currentImage.classList.add('active');
+    //     function showNextLoadingImage() {
+    //         if (currentLoadingIndex < totalLoadingImages) {
+    //             const currentImage = loadingImages[currentLoadingIndex];
+    //             currentImage.classList.add('active');
 
-                setTimeout(() => {
-                    if (previousLoadingImage) {
-                        previousLoadingImage.classList.remove('active');
-                    }
-                    previousLoadingImage = currentImage;
-                }, 100);
+    //             setTimeout(() => {
+    //                 if (previousLoadingImage) {
+    //                     previousLoadingImage.classList.remove('active');
+    //                 }
+    //                 previousLoadingImage = currentImage;
+    //             }, 100);
 
-                currentLoadingIndex++;
-                setTimeout(showNextLoadingImage, 200);
-            } else {
-                setTimeout(() => {
-                    loadingContainer.style.display = 'none';
-                    content.style.display = 'block';
+    //             currentLoadingIndex++;
+    //             setTimeout(showNextLoadingImage, 200);
+    //         } else {
+    //             setTimeout(() => {
+    //                 loadingContainer.style.display = 'none';
+    //                 content.style.display = 'block';
 
-                    startBoxAnimation();
-                }, 200);
-            }
-        }
+    //                 startBoxAnimation();
+    //             }, 200);
+    //         }
+    //     }
 
-        setTimeout(showNextLoadingImage, 500);
-    })();
+    //     setTimeout(showNextLoadingImage, 500);
+    // })();
 
-    const snakeBtnList=[
-        'assets/btn/Snake1.png',
-        'assets/btn/Snake2.png',
-        'assets/btn/Snake3.png',
-        'assets/btn/Snake4.png',
-        'assets/btn/Snake5.png',
-        'assets/btn/Snake6.png',
-        'assets/btn/Snake7.png',
-        'assets/btn/Snake8.png',
-        'assets/btn/Snake9.png',
-        'assets/btn/Snake10.png',
-        'assets/btn/Snake11.png',
-        'assets/btn/Snake12.png',
-        'assets/btn/Snake13.png',
-        'assets/btn/Snake14.png',
-        'assets/btn/Snake15.png',
-        'assets/btn/Snake16.png',
-    ]
-    const qBtnList=[
-        'assets/btn/Q1.png',
-        'assets/btn/Q2.png',
-        'assets/btn/Q3.png',
-        'assets/btn/Q4.png',
-        'assets/btn/Q5.png',
-        'assets/btn/Q6.png',
-        'assets/btn/Q7.png',
-        'assets/btn/Q8.png',
-        'assets/btn/Q9.png',
-        'assets/btn/Q10.png',
-        'assets/btn/Q11.png',
-        'assets/btn/Q12.png',
-        'assets/btn/Q13.png',
-        'assets/btn/Q14.png',
-        'assets/btn/Q15.png',
-        'assets/btn/Q16.png',
-    ]
-    const sunBtnList=[
-        'assets/btn/Sun1.png',
-        'assets/btn/Sun2.png',
-        'assets/btn/Sun3.png',
-        'assets/btn/Sun4.png',
-        'assets/btn/Sun5.png',
-        'assets/btn/Sun6.png',
-        'assets/btn/Sun7.png',
-        'assets/btn/Sun8.png',
-        'assets/btn/Sun9.png',
-        'assets/btn/Sun10.png',
-        'assets/btn/Sun11.png',
-        'assets/btn/Sun12.png',
-        'assets/btn/Sun13.png',
-        'assets/btn/Sun14.png',
-        'assets/btn/Sun15.png',
-        'assets/btn/Sun16.png',
-    ]
 
     // 定義獎勵顯示配置
     const REWARDS_CONFIG = {
@@ -225,56 +171,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 按鈕動畫狀態
     const buttonStates = {
-        snake: { isAnimating: false, preloadedImages: [] },
-        q: { isAnimating: false, preloadedImages: [] },
-        sun: { isAnimating: false, preloadedImages: [] }
+        snake: { isAnimating: false },
+        q: { isAnimating: false },
+        sun: { isAnimating: false }
     };
 
-    // 預載按鈕圖片
-    function preloadButtonImages() {
-        // 預載蛇按鈕圖片
-        snakeBtnList.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            buttonStates.snake.preloadedImages.push(img);
-        });
-
-        // 預載問號按鈕圖片
-        qBtnList.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            buttonStates.q.preloadedImages.push(img);
-        });
-
-        // 預載太陽按鈕圖片
-        sunBtnList.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            buttonStates.sun.preloadedImages.push(img);
-        });
-    }
-
     // 播放按鈕動畫
-    function playButtonAnimation(buttonType, button, imageList) {
+    function playButtonAnimation(buttonType, buttonGroup) {
+        console.log(buttonType, buttonGroup);
         if (buttonStates[buttonType].isAnimating) return;
+        const imageList = Array.from(buttonGroup.children);
 
         buttonStates[buttonType].isAnimating = true;
-        button.style.pointerEvents = 'none'; // 鎖定按鈕
+        buttonGroup.style.pointerEvents = 'none'; // 鎖定按鈕
 
-        let frameIndex = 0;
-        const framesPerSecond = 16; // 16張圖片在0.5秒內播完
-        const interval = 300 / framesPerSecond;
+        const framesPerSecond = 16;
+        const interval = 500 / framesPerSecond;
+        let currentImageIndex = 0;
+        let previousImageIndex = null;
 
         const animate = () => {
-            if (frameIndex < imageList.length) {
-                button.src = imageList[frameIndex];
-                frameIndex++;
+            if (currentImageIndex < imageList.length) {
+                const currentImage = imageList[currentImageIndex];
+
+                currentImage.classList.add('active');
+                if (previousImageIndex) {
+                    previousImageIndex.classList.remove('active');
+                }
+                previousImageIndex = currentImage;
+                currentImageIndex++;
                 setTimeout(animate, interval);
             } else {
                 // 動畫結束，重置狀態
-                button.src = imageList[0];
+                imageList.forEach(image => {
+                    image.classList.remove('active');
+                });
+                imageList[0].classList.add('active');
                 buttonStates[buttonType].isAnimating = false;
-                button.style.pointerEvents = 'auto'; // 解鎖按鈕
+                buttonGroup.style.pointerEvents = 'auto'; // 解鎖按鈕
 
                 // 處理按鈕點擊邏輯
                 handleButtonClick(buttonType);
@@ -285,10 +219,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 修改按鈕點擊事件綁定
-    snakeBtn.addEventListener('click', () => playButtonAnimation('snake', snakeBtn, snakeBtnList));
-    qBtn.addEventListener('click', () => playButtonAnimation('q', qBtn, qBtnList));
-    sunBtn.addEventListener('click', () => playButtonAnimation('sun', sunBtn, sunBtnList));
+    snakeBtnGroup.addEventListener('click', () => playButtonAnimation('snake', snakeBtnGroup));
+    qBtnGroup.addEventListener('click', () => playButtonAnimation('q', qBtnGroup));
+    sunBtnGroup.addEventListener('click', () => playButtonAnimation('sun', sunBtnGroup));
 
-    // 在頁面加載時預載按鈕圖片
-    preloadButtonImages();
+    console.log(snakeBtnGroup);
 });

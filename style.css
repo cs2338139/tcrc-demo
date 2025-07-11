@@ -26,7 +26,7 @@ body {
   align-items: center;
   z-index: 1000;
 
-  img {
+  .loading-image {
     position: absolute;
     opacity: 0;
     max-width: 80%;
@@ -36,7 +36,7 @@ body {
     pointer-events: none;
   }
 
-  img.active {
+  .loading-image.active {
     opacity: 1;
   }
 }
@@ -64,11 +64,24 @@ body {
     width: 100%;
     justify-content: space-around;
 
-    .btn-image {
+    .btn-group {
       border: 1px solid green;
       width: 80px;
       height: 80px;
+      position: relative;
+    }
+
+    .btn-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+
+    .btn-image.active {
       opacity: 1;
     }
   }
