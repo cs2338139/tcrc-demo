@@ -185,8 +185,8 @@ document.addEventListener('DOMContentLoaded', function() {
         buttonStates[buttonType].isAnimating = true;
         buttonGroup.style.pointerEvents = 'none'; // 鎖定按鈕
 
-        const framesPerSecond = 16;
-        const interval = 500 / framesPerSecond;
+        const framesPerSecond = 12;
+        const interval = 300 / framesPerSecond;
         let currentImageIndex = 0;
         let previousImageIndex = null;
 
