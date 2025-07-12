@@ -244,11 +244,7 @@ class ResultCalculator {
     // 特殊組合檢查
     const specialCombinations = [
       {
-        condition: () => getTypeCountInRange([timer1, timer2], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer3, timer4], GAME_CONFIG.BUTTON.SUN) >= 1,
-        result: GAME_CONFIG.RESULT.TYPES.RESULT_3,
-      },
-      {
-        condition: () => getTypeCountInRange([timer1, timer2, timer3], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer4], GAME_CONFIG.BUTTON.SUN) >= 1,
+        condition: () => getTypeCountInRange([timer1, timer2], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer3, timer4], GAME_CONFIG.BUTTON.SUN) >= 2,
         result: GAME_CONFIG.RESULT.TYPES.RESULT_3,
       },
       {
@@ -276,6 +272,7 @@ class ResultCalculator {
 
   static getRandomResult() {
     const randomValue = Math.random();
+
     const { RESULT_4, RESULT_3, RESULT_2 } = GAME_CONFIG.RANDOM_THRESHOLDS;
 
     if (randomValue >= RESULT_4) return GAME_CONFIG.RESULT.TYPES.RESULT_4;
