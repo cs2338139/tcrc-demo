@@ -69,6 +69,11 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(showNextLoadingImage, 500);
   }
 
+  function playAudio(fileName) {
+    const audio = new Audio(`assets/audio/${fileName}.mp3`);
+    audio.play();
+  }
+
   async function handleButtonClick(buttonType) {
     function updateTimerState() {
       if (TIMER_STATES.timer1 === 'empty') {
@@ -196,19 +201,27 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     };
 
-    function setResultImg(result) {
+    function setResult(result) {
       switch (result) {
         case 'result-1': {
           resultImage.src = 'assets/result/cucumber19.webp';
+          playAudio('result-normal');
+          break;
         }
         case 'result-2': {
           resultImage.src = 'assets/result/pepper19.webp';
+          playAudio('result-normal');
+          break;
         }
         case 'result-3': {
           resultImage.src = 'assets/result/together19.webp';
+          playAudio('result-special');
+          break;
         }
         case 'result-4': {
           resultImage.src = 'assets/result/together+shot.webp';
+          playAudio('result-special');
+          break;
         }
       }
 
@@ -253,9 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const result = await checkResult();
 
-    setResultImg(result);
-
-    console.log(result);
+    setResult(result);
   }
 
   function playButtonAnimation(buttonType, buttonGroup) {
@@ -270,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentImageIndex = 0;
     let previousImageIndex = null;
 
+    playAudio('button');
     const animate = () => {
       if (currentImageIndex < imageList.length) {
         const currentImage = imageList[currentImageIndex];
