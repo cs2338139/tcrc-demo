@@ -117,44 +117,84 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const checkResult = () => {
-      const { timer1, timer2, timer3, timer4 } = TIMER_STATES;
+      return new Promise((resolve) => {
+        const { timer1, timer2, timer3, timer4 } = TIMER_STATES;
+        const allTimers = [timer1, timer2, timer3, timer4];
 
-      const getRandomResult = () => {
-        const randomValue = Math.random();
-        if (randomValue >= 0.99) return 'result-4';
-        if (randomValue >= 0.96) return 'result-3';
-        if (randomValue >= 0.5) return 'result-2';
-        return 'result-1';
-      };
+        const getRandomResult = () => {
+          // 隨機結果生成器，使用常數提高可讀性
+          const RANDOM_THRESHOLDS = {
+            RESULT_4: 0.99,
+            RESULT_3: 0.96,
+            RESULT_2: 0.5,
+          };
+          const randomValue = Math.random();
+          if (randomValue >= RANDOM_THRESHOLDS.RESULT_4) return 'result-4';
+          if (randomValue >= RANDOM_THRESHOLDS.RESULT_3) return 'result-3';
+          if (randomValue >= RANDOM_THRESHOLDS.RESULT_2) return 'result-2';
+          return 'result-1';
+        };
 
-      const getCount = (timer = '') => [timer1, timer2, timer3, timer4].filter((t) => t === timer).length;
-      const getScopeCount = (scope = [], timer = '') => scope.filter((t) => t === timer).length;
+        // 計算特定類型在所有計時器中的數量
+        const getTimerTypeCount = (timerType) => {
+          return allTimers.filter((timer) => timer === timerType).length;
+        };
 
-      if (getScopeCount([timer1, timer2], 'snake') >= 2 && getScopeCount([timer3, timer4], 'sun') >= 1) {
-        return 'result-3';
-      }
+        // 計算特定類型在指定範圍內的數量
+        const getTimerTypeCountInRange = (timerRange, timerType) => {
+          return timerRange.filter((timer) => timer === timerType).length;
+        };
 
-      if (getScopeCount([timer1, timer2, timer3], 'snake') >= 2 && getScopeCount([timer4], 'sun') >= 1) {
-        return 'result-3';
-      }
+        // 定義特殊組合規則
+        const specialCombinations = [
+          {
+            // 前兩個位置有2個以上snake，後兩個位置有1個以上sun
+            condition: () => getTimerTypeCountInRange([timer1, timer2], 'snake') >= 2 && getTimerTypeCountInRange([timer3, timer4], 'sun') >= 1,
+            result: 'result-3',
+          },
+          {
+            // 前三個位置有2個以上snake，第四個位置有1個以上sun
+            condition: () => getTimerTypeCountInRange([timer1, timer2, timer3], 'snake') >= 2 && getTimerTypeCountInRange([timer4], 'sun') >= 1,
+            result: 'result-3',
+          },
+          {
+            // 第一個位置有sun，第二三個位置有2個q，第四個位置有snake
+            condition: () => getTimerTypeCountInRange([timer1], 'sun') >= 1 && getTimerTypeCountInRange([timer2, timer3], 'q') >= 2 && getTimerTypeCountInRange([timer4], 'snake') >= 1,
+            result: 'result-4',
+          },
+        ];
 
-      if (getScopeCount([timer1], 'sun') >= 1 && getScopeCount([timer2, timer3], 'q') >= 2 && getScopeCount([timer4], 'snake') >= 1) {
-        return 'result-4';
-      }
+        // 檢查特殊組合
+        for (const combination of specialCombinations) {
+          if (combination.condition()) {
+            resolve(combination.result);
+            return;
+          }
+        }
 
-      if (getCount('snake') >= 3) {
-        return 'result-1';
-      }
+        // 檢查基本數量規則
+        const snakeCount = getTimerTypeCount('snake');
+        const sunCount = getTimerTypeCount('sun');
+        const qCount = getTimerTypeCount('q');
 
-      if (getCount('sun') >= 3) {
-        return 'result-2';
-      }
+        if (snakeCount >= 3) {
+          resolve('result-1');
+          return;
+        }
 
-      if (getCount('q') >= 3) {
-        return getRandomResult();
-      }
+        if (sunCount >= 3) {
+          resolve('result-2');
+          return;
+        }
 
-      return getRandomResult();
+        if (qCount >= 3) {
+          resolve(getRandomResult());
+          return;
+        }
+
+        // 預設返回隨機結果
+        resolve(getRandomResult());
+      });
     };
 
     const isGameOver = () => TIMER_STATES.timer4 === 'empty';
@@ -192,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     await animate();
 
-    const result = checkResult();
+    const result = await checkResult();
     console.log(result);
   }
 
