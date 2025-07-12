@@ -11,7 +11,8 @@ const GAME_CONFIG = {
     FRAMES_PER_SECOND: 12,
     BUTTON_FRAMES: 16,
     SNAKE_CIRCLE_FRAMES: 19,
-    BUTTON_DURATION: 300,
+    BUTTON_DURATION: 200,
+    SNAKE_CIRCLE_DURATION: 750,
   },
   BUTTON: {
     SNAKE: 'snake',
@@ -212,7 +213,7 @@ class AnimationManager {
   // Snake Circle 動畫（使用統一函式）
   static async playSnakeCircleAnimation(container) {
     const images = Array.from(container.children);
-    const interval = 1000 / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
+    const interval = GAME_CONFIG.ANIMATION.SNAKE_CIRCLE_DURATION / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
 
     return this.playSequenceAnimation(images, {
       interval: interval,
@@ -426,6 +427,8 @@ class TCRCGame {
   }
 
   async handleButtonPress(buttonType) {
+    if (this.gameState.isGameOver()) return;
+
     const buttonGroup = this.elements[`${buttonType}BtnGroup`];
 
     // 播放按鈕音效
