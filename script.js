@@ -1,317 +1,444 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const loadingContainer = document.getElementById('loading-container');
+// 遊戲常量配置
+const GAME_CONFIG = {
+  LOADING: {
+    TOTAL_IMAGES: 8,
+    DISPLAY_DURATION: 200,
+    FADE_DELAY: 100,
+    INITIAL_DELAY: 500,
+    FINAL_DELAY: 200,
+  },
+  ANIMATION: {
+    FRAMES_PER_SECOND: 12,
+    BUTTON_FRAMES: 16,
+    SNAKE_CIRCLE_FRAMES: 19,
+    BUTTON_DURATION: 300,
+  },
+  BUTTON: {
+    SNAKE: 'snake',
+    Q: 'q',
+    SUN: 'sun',
+  },
+  AUDIO: {
+    BUTTON: 'button',
+    RESULT_NORMAL: 'result-normal',
+    RESULT_SPECIAL: 'result-special',
+  },
+  RESULT: {
+    TYPES: {
+      RESULT_1: 'result-1',
+      RESULT_2: 'result-2',
+      RESULT_3: 'result-3',
+      RESULT_4: 'result-4',
+    },
+    IMAGES: {
+      'result-1': 'assets/result/cucumber19.webp',
+      'result-2': 'assets/result/pepper19.webp',
+      'result-3': 'assets/result/together19.webp',
+      'result-4': 'assets/result/together+shot.webp',
+    },
+  },
+  RANDOM_THRESHOLDS: {
+    RESULT_4: 0.99,
+    RESULT_3: 0.96,
+    RESULT_2: 0.5,
+  },
+};
 
-  const contentContainer = document.getElementById('content-container');
-  const btnContainer = document.getElementById('btn-container');
-  const resultImage = document.getElementById('result-img');
-  const snakeBtnGroup = document.getElementById('snake-btn-group');
-  const qBtnGroup = document.getElementById('q-btn-group');
-  const sunBtnGroup = document.getElementById('sun-btn-group');
-  const snakeCircleContainer = document.getElementById('snake-circle-container');
-
-  const timersContainer = document.getElementById('timers-container');
-  const timer1 = document.getElementById('timer-1');
-  const timer2 = document.getElementById('timer-2');
-  const timer3 = document.getElementById('timer-3');
-  const timer4 = document.getElementById('timer-4');
-
-  const BUTTON_STATES = {
-    snake: { isAnimating: false },
-    q: { isAnimating: false },
-    sun: { isAnimating: false },
-  };
-
-  const TIMER_STATES = {
-    timer1: 'empty',
-    timer2: 'empty',
-    timer3: 'empty',
-    timer4: 'empty',
-  };
-
-  // 載入動畫
-  function loadingAnimation() {
-    const totalLoadingImages = 8;
-    const loadingImages = [];
-    for (let i = 1; i <= totalLoadingImages; i++) {
-      const img = document.createElement('img');
-      img.src = `assets/loading/loading${i}.png`;
-      img.alt = `Loading ${i}`;
-      img.classList.add('loading-image');
-      loadingContainer.appendChild(img);
-      loadingImages.push(img);
-    }
-
-    let currentLoadingIndex = 0;
-    let previousLoadingImage = null;
-
-    function showNextLoadingImage() {
-      if (currentLoadingIndex < totalLoadingImages) {
-        const currentImage = loadingImages[currentLoadingIndex];
-        currentImage.classList.add('active');
-
-        setTimeout(() => {
-          if (previousLoadingImage) {
-            previousLoadingImage.classList.remove('active');
-          }
-          previousLoadingImage = currentImage;
-        }, 100);
-
-        currentLoadingIndex++;
-        setTimeout(showNextLoadingImage, 200);
-      } else {
-        setTimeout(() => {
-          loadingContainer.style.display = 'none';
-          contentContainer.style.display = 'block';
-        }, 200);
-      }
-    }
-
-    setTimeout(showNextLoadingImage, 500);
-  }
-
-  function playAudio(fileName) {
-    const audio = new Audio(`assets/audio/${fileName}.mp3`);
-    audio.play();
-  }
-
-  async function handleButtonClick(buttonType) {
-    function updateTimerState() {
-      if (TIMER_STATES.timer1 === 'empty') {
-        TIMER_STATES.timer1 = buttonType;
-      } else if (TIMER_STATES.timer2 === 'empty') {
-        TIMER_STATES.timer2 = buttonType;
-      } else if (TIMER_STATES.timer3 === 'empty') {
-        TIMER_STATES.timer3 = buttonType;
-      } else if (TIMER_STATES.timer4 === 'empty') {
-        TIMER_STATES.timer4 = buttonType;
-      }
-    }
-
-    function updateTimerImage() {
-      timer1.src = `assets/timer/${TIMER_STATES.timer1}.webp`;
-      timer2.src = `assets/timer/${TIMER_STATES.timer2}.webp`;
-      timer3.src = `assets/timer/${TIMER_STATES.timer3}.webp`;
-      timer4.src = `assets/timer/${TIMER_STATES.timer4}.webp`;
-    }
-
-    async function lockBtnContainer() {
-      await new Promise((resolve) => {
-        btnContainer.style.pointerEvents = 'none';
-        resolve();
-      });
-    }
-
-    async function timersContainerShining() {
-      timersContainer.style.opacity = 0;
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      timersContainer.style.opacity = 1;
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      timersContainer.style.opacity = 0;
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      timersContainer.style.opacity = 1;
-    }
-
-    async function allContainerOpacity() {
-      await new Promise((resolve) => {
-        btnContainer.style.opacity = 0;
-        timersContainer.style.opacity = 0;
-        btnContainer.style.pointerEvents = 'none';
-        resolve();
-      });
-    }
-
-    const checkResult = () => {
-      return new Promise((resolve) => {
-        const { timer1, timer2, timer3, timer4 } = TIMER_STATES;
-        const allTimers = [timer1, timer2, timer3, timer4];
-
-        const getRandomResult = () => {
-          // 隨機結果生成器，使用常數提高可讀性
-          const RANDOM_THRESHOLDS = {
-            RESULT_4: 0.99,
-            RESULT_3: 0.96,
-            RESULT_2: 0.5,
-          };
-          const randomValue = Math.random();
-          if (randomValue >= RANDOM_THRESHOLDS.RESULT_4) return 'result-4';
-          if (randomValue >= RANDOM_THRESHOLDS.RESULT_3) return 'result-3';
-          if (randomValue >= RANDOM_THRESHOLDS.RESULT_2) return 'result-2';
-          return 'result-1';
-        };
-
-        // 計算特定類型在所有計時器中的數量
-        const getTimerTypeCount = (timerType) => {
-          return allTimers.filter((timer) => timer === timerType).length;
-        };
-
-        // 計算特定類型在指定範圍內的數量
-        const getTimerTypeCountInRange = (timerRange, timerType) => {
-          return timerRange.filter((timer) => timer === timerType).length;
-        };
-
-        // 定義特殊組合規則
-        const specialCombinations = [
-          {
-            // 前兩個位置有2個以上snake，後兩個位置有1個以上sun
-            condition: () => getTimerTypeCountInRange([timer1, timer2], 'snake') >= 2 && getTimerTypeCountInRange([timer3, timer4], 'sun') >= 1,
-            result: 'result-3',
-          },
-          {
-            // 前三個位置有2個以上snake，第四個位置有1個以上sun
-            condition: () => getTimerTypeCountInRange([timer1, timer2, timer3], 'snake') >= 2 && getTimerTypeCountInRange([timer4], 'sun') >= 1,
-            result: 'result-3',
-          },
-          {
-            // 第一個位置有sun，第二三個位置有2個q，第四個位置有snake
-            condition: () => getTimerTypeCountInRange([timer1], 'sun') >= 1 && getTimerTypeCountInRange([timer2, timer3], 'q') >= 2 && getTimerTypeCountInRange([timer4], 'snake') >= 1,
-            result: 'result-4',
-          },
-        ];
-
-        // 檢查特殊組合
-        for (const combination of specialCombinations) {
-          if (combination.condition()) {
-            resolve(combination.result);
-            return;
-          }
-        }
-
-        // 檢查基本數量規則
-        const snakeCount = getTimerTypeCount('snake');
-        const sunCount = getTimerTypeCount('sun');
-        const qCount = getTimerTypeCount('q');
-
-        if (snakeCount >= 3) {
-          resolve('result-1');
-          return;
-        }
-
-        if (sunCount >= 3) {
-          resolve('result-2');
-          return;
-        }
-
-        if (qCount >= 3) {
-          resolve(getRandomResult());
-          return;
-        }
-
-        // 預設返回隨機結果
-        resolve(getRandomResult());
-      });
+// 遊戲狀態管理
+class GameState {
+  constructor() {
+    this.buttonStates = {
+      [GAME_CONFIG.BUTTON.SNAKE]: { isAnimating: false },
+      [GAME_CONFIG.BUTTON.Q]: { isAnimating: false },
+      [GAME_CONFIG.BUTTON.SUN]: { isAnimating: false },
     };
 
-    function setResult(result) {
-      switch (result) {
-        case 'result-1': {
-          resultImage.src = 'assets/result/cucumber19.webp';
-          playAudio('result-normal');
-          break;
-        }
-        case 'result-2': {
-          resultImage.src = 'assets/result/pepper19.webp';
-          playAudio('result-normal');
-          break;
-        }
-        case 'result-3': {
-          resultImage.src = 'assets/result/together19.webp';
-          playAudio('result-special');
-          break;
-        }
-        case 'result-4': {
-          resultImage.src = 'assets/result/together+shot.webp';
-          playAudio('result-special');
-          break;
-        }
-      }
-
-      resultImage.style.opacity = 1;
-      snakeCircleContainer.style.opacity = 0;
-    }
-
-    const isGameOver = () => TIMER_STATES.timer4 === 'empty';
-
-    updateTimerState();
-    updateTimerImage();
-
-    if (isGameOver()) return;
-
-    await lockBtnContainer();
-    await timersContainerShining();
-    await allContainerOpacity();
-
-    const framesPerSecond = 12;
-    const interval = 1000 / framesPerSecond;
-    let currentImageIndex = 0;
-    let previousImageIndex = null;
-
-    const animate = async () => {
-      const snakeCircleImages = Array.from(snakeCircleContainer.children);
-      if (currentImageIndex < snakeCircleImages.length) {
-        const currentImage = snakeCircleImages[currentImageIndex];
-
-        currentImage.classList.add('active');
-        if (previousImageIndex) {
-          previousImageIndex.classList.remove('active');
-        }
-        previousImageIndex = currentImage;
-        currentImageIndex++;
-
-        await new Promise((resolve) => setTimeout(resolve, interval));
-        await animate();
-      }
+    this.timerStates = {
+      timer1: 'empty',
+      timer2: 'empty',
+      timer3: 'empty',
+      timer4: 'empty',
     };
-
-    await animate();
-
-    const result = await checkResult();
-
-    setResult(result);
   }
 
-  function playButtonAnimation(buttonType, buttonGroup) {
-    if (BUTTON_STATES[buttonType].isAnimating) return;
-    const imageList = Array.from(buttonGroup.children);
+  updateTimerState(buttonType) {
+    const timers = ['timer1', 'timer2', 'timer3', 'timer4'];
+    for (const timer of timers) {
+      if (this.timerStates[timer] === 'empty') {
+        this.timerStates[timer] = buttonType;
+        break;
+      }
+    }
+  }
 
-    BUTTON_STATES[buttonType].isAnimating = true;
-    buttonGroup.style.pointerEvents = 'none'; // 鎖定按鈕
+  isGameOver() {
+    return this.timerStates.timer4 !== 'empty';
+  }
 
-    const framesPerSecond = 12;
-    const interval = 300 / framesPerSecond;
-    let currentImageIndex = 0;
-    let previousImageIndex = null;
+  resetGame() {
+    this.timerStates = {
+      timer1: 'empty',
+      timer2: 'empty',
+      timer3: 'empty',
+      timer4: 'empty',
+    };
+  }
+}
 
-    playAudio('button');
+// 動畫管理器
+class AnimationManager {
+  static async playSequentialAnimation(images, interval, callback = null) {
+    let currentIndex = 0;
+    let previousImage = null;
+
     const animate = () => {
-      if (currentImageIndex < imageList.length) {
-        const currentImage = imageList[currentImageIndex];
-
+      if (currentIndex < images.length) {
+        const currentImage = images[currentIndex];
         currentImage.classList.add('active');
-        if (previousImageIndex) {
-          previousImageIndex.classList.remove('active');
-        }
-        previousImageIndex = currentImage;
-        currentImageIndex++;
-        setTimeout(animate, interval);
-      } else {
-        // 動畫結束，重置狀態
-        imageList.forEach((image) => {
-          image.classList.remove('active');
-        });
-        imageList[0].classList.add('active');
-        BUTTON_STATES[buttonType].isAnimating = false;
-        buttonGroup.style.pointerEvents = 'auto'; // 解鎖按鈕
 
-        handleButtonClick(buttonType);
+        if (previousImage) {
+          previousImage.classList.remove('active');
+        }
+        previousImage = currentImage;
+        currentIndex++;
+
+        if (callback) callback(currentIndex, images.length);
+
+        setTimeout(animate, interval);
       }
     };
 
     animate();
   }
 
-  snakeBtnGroup.addEventListener('click', () => playButtonAnimation('snake', snakeBtnGroup));
-  qBtnGroup.addEventListener('click', () => playButtonAnimation('q', qBtnGroup));
-  sunBtnGroup.addEventListener('click', () => playButtonAnimation('sun', sunBtnGroup));
+  static async playLoadingAnimation(container, totalImages, config) {
+    const images = [];
 
-  loadingAnimation();
+    // 動態生成載入圖片
+    for (let i = 1; i <= totalImages; i++) {
+      const img = document.createElement('img');
+      img.src = `assets/loading/loading${i}.png`;
+      img.alt = `Loading ${i}`;
+      img.classList.add('loading-image');
+      container.appendChild(img);
+      images.push(img);
+    }
+
+    return new Promise((resolve) => {
+      let currentIndex = 0;
+      let previousImage = null;
+
+      const showNext = () => {
+        if (currentIndex < totalImages) {
+          const currentImage = images[currentIndex];
+          currentImage.classList.add('active');
+
+          setTimeout(() => {
+            if (previousImage) {
+              previousImage.classList.remove('active');
+            }
+            previousImage = currentImage;
+          }, config.FADE_DELAY);
+
+          currentIndex++;
+          setTimeout(showNext, config.DISPLAY_DURATION);
+        } else {
+          setTimeout(resolve, config.FINAL_DELAY);
+        }
+      };
+
+      setTimeout(showNext, config.INITIAL_DELAY);
+    });
+  }
+
+  static async playButtonAnimation(buttonGroup, buttonType, gameState) {
+    if (gameState.buttonStates[buttonType].isAnimating) return;
+
+    const images = Array.from(buttonGroup.children);
+    gameState.buttonStates[buttonType].isAnimating = true;
+    buttonGroup.style.pointerEvents = 'none';
+
+    const interval = GAME_CONFIG.ANIMATION.BUTTON_DURATION / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
+
+    return new Promise((resolve) => {
+      let currentIndex = 0;
+      let previousImage = null;
+
+      const animate = () => {
+        if (currentIndex < images.length) {
+          const currentImage = images[currentIndex];
+          currentImage.classList.add('active');
+
+          if (previousImage) {
+            previousImage.classList.remove('active');
+          }
+          previousImage = currentImage;
+          currentIndex++;
+          setTimeout(animate, interval);
+        } else {
+          // 重置按鈕狀態
+          images.forEach((img) => img.classList.remove('active'));
+          images[0].classList.add('active');
+          gameState.buttonStates[buttonType].isAnimating = false;
+          buttonGroup.style.pointerEvents = 'auto';
+          resolve();
+        }
+      };
+
+      animate();
+    });
+  }
+
+  static async playSnakeCircleAnimation(container) {
+    const images = Array.from(container.children);
+    const interval = 1000 / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
+
+    return new Promise((resolve) => {
+      let currentIndex = 0;
+      let previousImage = null;
+
+      const animate = () => {
+        if (currentIndex < images.length) {
+          const currentImage = images[currentIndex];
+          currentImage.classList.add('active');
+
+          if (previousImage) {
+            previousImage.classList.remove('active');
+          }
+          previousImage = currentImage;
+          currentIndex++;
+
+          setTimeout(animate, interval);
+        } else {
+          resolve();
+        }
+      };
+
+      animate();
+    });
+  }
+}
+
+// 音效管理器
+class AudioManager {
+  static play(fileName) {
+    const audio = new Audio(`assets/audio/${fileName}.mp3`);
+    audio.play();
+  }
+}
+
+// 結果計算器
+class ResultCalculator {
+  static calculateResult(timerStates) {
+    const { timer1, timer2, timer3, timer4 } = timerStates;
+    const allTimers = [timer1, timer2, timer3, timer4];
+
+    // 計算特定類型的數量
+    const getTypeCount = (type) => allTimers.filter((t) => t === type).length;
+
+    // 計算特定範圍內的類型數量
+    const getTypeCountInRange = (range, type) => range.filter((t) => t === type).length;
+
+    // 特殊組合檢查
+    const specialCombinations = [
+      {
+        condition: () => getTypeCountInRange([timer1, timer2], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer3, timer4], GAME_CONFIG.BUTTON.SUN) >= 1,
+        result: GAME_CONFIG.RESULT.TYPES.RESULT_3,
+      },
+      {
+        condition: () => getTypeCountInRange([timer1, timer2, timer3], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer4], GAME_CONFIG.BUTTON.SUN) >= 1,
+        result: GAME_CONFIG.RESULT.TYPES.RESULT_3,
+      },
+      {
+        condition: () => getTypeCountInRange([timer1], GAME_CONFIG.BUTTON.SUN) >= 1 && getTypeCountInRange([timer2, timer3], GAME_CONFIG.BUTTON.Q) >= 2 && getTypeCountInRange([timer4], GAME_CONFIG.BUTTON.SNAKE) >= 1,
+        result: GAME_CONFIG.RESULT.TYPES.RESULT_4,
+      },
+    ];
+
+    // 檢查特殊組合
+    for (const combo of specialCombinations) {
+      if (combo.condition()) return combo.result;
+    }
+
+    // 基本數量規則
+    const snakeCount = getTypeCount(GAME_CONFIG.BUTTON.SNAKE);
+    const sunCount = getTypeCount(GAME_CONFIG.BUTTON.SUN);
+    const qCount = getTypeCount(GAME_CONFIG.BUTTON.Q);
+
+    if (snakeCount >= 3) return GAME_CONFIG.RESULT.TYPES.RESULT_1;
+    if (sunCount >= 3) return GAME_CONFIG.RESULT.TYPES.RESULT_2;
+    if (qCount >= 3) return this.getRandomResult();
+
+    return this.getRandomResult();
+  }
+
+  static getRandomResult() {
+    const randomValue = Math.random();
+    const { RESULT_4, RESULT_3, RESULT_2 } = GAME_CONFIG.RANDOM_THRESHOLDS;
+
+    if (randomValue >= RESULT_4) return GAME_CONFIG.RESULT.TYPES.RESULT_4;
+    if (randomValue >= RESULT_3) return GAME_CONFIG.RESULT.TYPES.RESULT_3;
+    if (randomValue >= RESULT_2) return GAME_CONFIG.RESULT.TYPES.RESULT_2;
+    return GAME_CONFIG.RESULT.TYPES.RESULT_1;
+  }
+}
+
+// UI 管理器
+class UIManager {
+  constructor(elements) {
+    this.elements = elements;
+  }
+
+  updateTimerImages(timerStates) {
+    this.elements.timer1.src = `assets/timer/${timerStates.timer1}.webp`;
+    this.elements.timer2.src = `assets/timer/${timerStates.timer2}.webp`;
+    this.elements.timer3.src = `assets/timer/${timerStates.timer3}.webp`;
+    this.elements.timer4.src = `assets/timer/${timerStates.timer4}.webp`;
+  }
+
+  async showLoadingScreen() {
+    return AnimationManager.playLoadingAnimation(this.elements.loadingContainer, GAME_CONFIG.LOADING.TOTAL_IMAGES, GAME_CONFIG.LOADING);
+  }
+
+  hideLoadingScreen() {
+    this.elements.loadingContainer.style.display = 'none';
+    this.elements.contentContainer.style.display = 'block';
+  }
+
+  async lockInterface() {
+    this.elements.btnContainer.style.pointerEvents = 'none';
+  }
+
+  async flashTimersContainer() {
+    const container = this.elements.timersContainer;
+    const flashSequence = [
+      { opacity: 0, delay: 500 },
+      { opacity: 1, delay: 500 },
+      { opacity: 0, delay: 500 },
+      { opacity: 1, delay: 0 },
+    ];
+
+    for (const step of flashSequence) {
+      container.style.opacity = step.opacity;
+      if (step.delay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, step.delay));
+      }
+    }
+  }
+
+  async hideGameElements() {
+    this.elements.btnContainer.style.opacity = 0;
+    this.elements.timersContainer.style.opacity = 0;
+    this.elements.btnContainer.style.pointerEvents = 'none';
+  }
+
+  showResult(resultType) {
+    const imageSrc = GAME_CONFIG.RESULT.IMAGES[resultType];
+    this.elements.resultImage.src = imageSrc;
+    this.elements.resultImage.style.opacity = 1;
+    this.elements.snakeCircleContainer.style.opacity = 0;
+
+    // 播放對應音效
+    const isSpecialResult = resultType === GAME_CONFIG.RESULT.TYPES.RESULT_3 || resultType === GAME_CONFIG.RESULT.TYPES.RESULT_4;
+    const audioType = isSpecialResult ? GAME_CONFIG.AUDIO.RESULT_SPECIAL : GAME_CONFIG.AUDIO.RESULT_NORMAL;
+    AudioManager.play(audioType);
+  }
+
+  initializeSnakeCircleImages() {
+    // 動態生成 snake circle 圖片，就像 loading 圖片一樣
+    const container = this.elements.snakeCircleContainer;
+    container.innerHTML = ''; // 清空現有內容
+
+    for (let i = 1; i <= GAME_CONFIG.ANIMATION.SNAKE_CIRCLE_FRAMES; i++) {
+      const img = document.createElement('img');
+      img.src = `assets/snakecircle/snakecircle${i}.webp`;
+      img.alt = 'Snake Circle';
+      img.classList.add('snake-circle-image');
+      if (i === 1) img.classList.add('active');
+      container.appendChild(img);
+    }
+  }
+}
+
+// 主遊戲類
+class TCRCGame {
+  constructor() {
+    this.gameState = new GameState();
+    this.elements = this.getElements();
+    this.ui = new UIManager(this.elements);
+    this.initializeGame();
+  }
+
+  getElements() {
+    return {
+      loadingContainer: document.getElementById('loading-container'),
+      contentContainer: document.getElementById('content-container'),
+      btnContainer: document.getElementById('btn-container'),
+      resultImage: document.getElementById('result-img'),
+      snakeBtnGroup: document.getElementById('snake-btn-group'),
+      qBtnGroup: document.getElementById('q-btn-group'),
+      sunBtnGroup: document.getElementById('sun-btn-group'),
+      snakeCircleContainer: document.getElementById('snake-circle-container'),
+      timersContainer: document.getElementById('timers-container'),
+      timer1: document.getElementById('timer-1'),
+      timer2: document.getElementById('timer-2'),
+      timer3: document.getElementById('timer-3'),
+      timer4: document.getElementById('timer-4'),
+    };
+  }
+
+  async initializeGame() {
+    // 初始化 snake circle 圖片
+    this.ui.initializeSnakeCircleImages();
+
+    // 設置按鈕事件監聽器
+    this.setupEventListeners();
+
+    // 播放載入動畫
+    await this.ui.showLoadingScreen();
+    this.ui.hideLoadingScreen();
+  }
+
+  setupEventListeners() {
+    this.elements.snakeBtnGroup.addEventListener('click', () => this.handleButtonPress(GAME_CONFIG.BUTTON.SNAKE));
+    this.elements.qBtnGroup.addEventListener('click', () => this.handleButtonPress(GAME_CONFIG.BUTTON.Q));
+    this.elements.sunBtnGroup.addEventListener('click', () => this.handleButtonPress(GAME_CONFIG.BUTTON.SUN));
+  }
+
+  async handleButtonPress(buttonType) {
+    const buttonGroup = this.elements[`${buttonType}BtnGroup`];
+
+    // 播放按鈕音效
+    AudioManager.play(GAME_CONFIG.AUDIO.BUTTON);
+
+    // 播放按鈕動畫
+    await AnimationManager.playButtonAnimation(buttonGroup, buttonType, this.gameState);
+
+    // 處理遊戲邏輯
+    await this.processGameLogic(buttonType);
+  }
+
+  async processGameLogic(buttonType) {
+    // 更新遊戲狀態
+    this.gameState.updateTimerState(buttonType);
+    this.ui.updateTimerImages(this.gameState.timerStates);
+
+    // 檢查遊戲是否結束
+    if (!this.gameState.isGameOver()) return;
+
+    // 遊戲結束流程
+    await this.ui.lockInterface();
+    await this.ui.flashTimersContainer();
+    await this.ui.hideGameElements();
+    await AnimationManager.playSnakeCircleAnimation(this.elements.snakeCircleContainer);
+
+    // 計算並顯示結果
+    const result = ResultCalculator.calculateResult(this.gameState.timerStates);
+    this.ui.showResult(result);
+  }
+}
+
+// 當 DOM 載入完成時啟動遊戲
+document.addEventListener('DOMContentLoaded', () => {
+  new TCRCGame();
 });
