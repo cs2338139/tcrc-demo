@@ -18,6 +18,11 @@ const GAME_CONFIG = {
     Q: 'q',
     SUN: 'sun',
   },
+  BUTTON_IMAGES: {
+    SNAKE: 'Snake',
+    Q: 'Q',
+    SUN: 'Sun',
+  },
   AUDIO: {
     BUTTON: 'button',
     RESULT_NORMAL: 'result-normal',
@@ -358,6 +363,28 @@ class UIManager {
       container.appendChild(img);
     }
   }
+
+  initializeButtonImages() {
+    // 動態生成所有按鈕圖片
+    this.initializeButtonGroup(this.elements.snakeBtnGroup, GAME_CONFIG.BUTTON_IMAGES.SNAKE);
+    this.initializeButtonGroup(this.elements.qBtnGroup, GAME_CONFIG.BUTTON_IMAGES.Q);
+    this.initializeButtonGroup(this.elements.sunBtnGroup, GAME_CONFIG.BUTTON_IMAGES.SUN);
+  }
+
+  initializeButtonGroup(container, buttonName) {
+    // 清空現有內容
+    container.innerHTML = '';
+
+    // 動態生成按鈕圖片
+    for (let i = 1; i <= GAME_CONFIG.ANIMATION.BUTTON_FRAMES; i++) {
+      const img = document.createElement('img');
+      img.src = `assets/btn/${buttonName}${i}.webp`;
+      img.alt = buttonName;
+      img.classList.add('btn-image');
+      if (i === 1) img.classList.add('active');
+      container.appendChild(img);
+    }
+  }
 }
 
 // 主遊戲類
@@ -390,6 +417,9 @@ class TCRCGame {
   async initializeGame() {
     // 初始化 snake circle 圖片
     this.ui.initializeSnakeCircleImages();
+
+    // 初始化按鈕圖片
+    this.ui.initializeButtonImages();
 
     // 設置按鈕事件監聽器
     this.setupEventListeners();
