@@ -90,45 +90,76 @@ class GameState {
   }
 }
 
-// 動畫管理器
+// 動畫管理器 - 統一管理所有序列圖片的生成和播放
 class AnimationManager {
-  static async playSequentialAnimation(images, interval, callback = null) {
-    let currentIndex = 0;
-    let previousImage = null;
-
-    const animate = () => {
-      if (currentIndex < images.length) {
-        const currentImage = images[currentIndex];
-        currentImage.classList.add('active');
-
-        if (previousImage) {
-          previousImage.classList.remove('active');
-        }
-        previousImage = currentImage;
-        currentIndex++;
-
-        if (callback) callback(currentIndex, images.length);
-
-        setTimeout(animate, interval);
-      }
-    };
-
-    animate();
-  }
-
-  static async playLoadingAnimation(container, totalImages, config) {
+  // 統一的序列圖片生成函式
+  static generateSequenceImages(container, config) {
     const images = [];
+    container.innerHTML = ''; // 清空現有內容
 
-    // 動態生成載入圖片
-    for (let i = 1; i <= totalImages; i++) {
+    for (let i = 1; i <= config.count; i++) {
       const img = document.createElement('img');
-      img.src = `assets/loading/loading${i}.png`;
-      img.alt = `Loading ${i}`;
-      img.classList.add('loading-image');
+      img.src = `${config.basePath}${config.prefix}${i}.${config.extension}`;
+      img.alt = config.alt || `${config.prefix} ${i}`;
+      img.classList.add(config.className);
+
+      // 第一張圖片設為 active
+      if (i === 1) {
+        img.classList.add('active');
+      }
+
       container.appendChild(img);
       images.push(img);
     }
 
+    return images;
+  }
+
+  // 統一的序列動畫播放函式
+  static async playSequenceAnimation(images, config) {
+    return new Promise((resolve) => {
+      let currentIndex = 0;
+      let previousImage = null;
+
+      const animate = () => {
+        if (currentIndex < images.length) {
+          const currentImage = images[currentIndex];
+          currentImage.classList.add('active');
+
+          if (previousImage) {
+            previousImage.classList.remove('active');
+          }
+          previousImage = currentImage;
+          currentIndex++;
+
+          setTimeout(animate, config.interval);
+        } else {
+          // 動畫完成後的回調
+          if (config.onComplete) {
+            config.onComplete();
+          }
+          resolve();
+        }
+      };
+
+      // 支援初始延遲
+      const startDelay = config.initialDelay || 0;
+      setTimeout(animate, startDelay);
+    });
+  }
+
+  // 載入動畫（使用統一函式）
+  static async playLoadingAnimation(container, totalImages, config) {
+    const images = this.generateSequenceImages(container, {
+      count: totalImages,
+      basePath: 'assets/loading/',
+      prefix: 'loading',
+      extension: 'png',
+      className: 'loading-image',
+      alt: 'Loading',
+    });
+
+    // 使用特殊的載入動畫邏輯（保持原有的淡入淡出效果）
     return new Promise((resolve) => {
       let currentIndex = 0;
       let previousImage = null;
@@ -156,6 +187,7 @@ class AnimationManager {
     });
   }
 
+  // 按鈕動畫（使用統一函式）
   static async playButtonAnimation(buttonGroup, buttonType, gameState) {
     if (gameState.buttonStates[buttonType].isAnimating) return;
 
@@ -165,61 +197,25 @@ class AnimationManager {
 
     const interval = GAME_CONFIG.ANIMATION.BUTTON_DURATION / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
 
-    return new Promise((resolve) => {
-      let currentIndex = 0;
-      let previousImage = null;
-
-      const animate = () => {
-        if (currentIndex < images.length) {
-          const currentImage = images[currentIndex];
-          currentImage.classList.add('active');
-
-          if (previousImage) {
-            previousImage.classList.remove('active');
-          }
-          previousImage = currentImage;
-          currentIndex++;
-          setTimeout(animate, interval);
-        } else {
-          // 重置按鈕狀態
-          images.forEach((img) => img.classList.remove('active'));
-          images[0].classList.add('active');
-          gameState.buttonStates[buttonType].isAnimating = false;
-          buttonGroup.style.pointerEvents = 'auto';
-          resolve();
-        }
-      };
-
-      animate();
+    await this.playSequenceAnimation(images, {
+      interval: interval,
+      onComplete: () => {
+        // 重置按鈕狀態
+        images.forEach((img) => img.classList.remove('active'));
+        images[0].classList.add('active');
+        gameState.buttonStates[buttonType].isAnimating = false;
+        buttonGroup.style.pointerEvents = 'auto';
+      },
     });
   }
 
+  // Snake Circle 動畫（使用統一函式）
   static async playSnakeCircleAnimation(container) {
     const images = Array.from(container.children);
     const interval = 1000 / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
 
-    return new Promise((resolve) => {
-      let currentIndex = 0;
-      let previousImage = null;
-
-      const animate = () => {
-        if (currentIndex < images.length) {
-          const currentImage = images[currentIndex];
-          currentImage.classList.add('active');
-
-          if (previousImage) {
-            previousImage.classList.remove('active');
-          }
-          previousImage = currentImage;
-          currentIndex++;
-
-          setTimeout(animate, interval);
-        } else {
-          resolve();
-        }
-      };
-
-      animate();
+    return this.playSequenceAnimation(images, {
+      interval: interval,
     });
   }
 }
@@ -350,40 +346,34 @@ class UIManager {
   }
 
   initializeSnakeCircleImages() {
-    // 動態生成 snake circle 圖片，就像 loading 圖片一樣
-    const container = this.elements.snakeCircleContainer;
-    container.innerHTML = ''; // 清空現有內容
-
-    for (let i = 1; i <= GAME_CONFIG.ANIMATION.SNAKE_CIRCLE_FRAMES; i++) {
-      const img = document.createElement('img');
-      img.src = `assets/snakecircle/snakecircle${i}.webp`;
-      img.alt = 'Snake Circle';
-      img.classList.add('snake-circle-image');
-      if (i === 1) img.classList.add('active');
-      container.appendChild(img);
-    }
+    // 使用統一的序列圖片生成函式
+    AnimationManager.generateSequenceImages(this.elements.snakeCircleContainer, {
+      count: GAME_CONFIG.ANIMATION.SNAKE_CIRCLE_FRAMES,
+      basePath: 'assets/snakecircle/',
+      prefix: 'snakecircle',
+      extension: 'webp',
+      className: 'snake-circle-image',
+      alt: 'Snake Circle',
+    });
   }
 
   initializeButtonImages() {
-    // 動態生成所有按鈕圖片
+    // 使用統一的序列圖片生成函式生成所有按鈕圖片
     this.initializeButtonGroup(this.elements.snakeBtnGroup, GAME_CONFIG.BUTTON_IMAGES.SNAKE);
     this.initializeButtonGroup(this.elements.qBtnGroup, GAME_CONFIG.BUTTON_IMAGES.Q);
     this.initializeButtonGroup(this.elements.sunBtnGroup, GAME_CONFIG.BUTTON_IMAGES.SUN);
   }
 
   initializeButtonGroup(container, buttonName) {
-    // 清空現有內容
-    container.innerHTML = '';
-
-    // 動態生成按鈕圖片
-    for (let i = 1; i <= GAME_CONFIG.ANIMATION.BUTTON_FRAMES; i++) {
-      const img = document.createElement('img');
-      img.src = `assets/btn/${buttonName}${i}.webp`;
-      img.alt = buttonName;
-      img.classList.add('btn-image');
-      if (i === 1) img.classList.add('active');
-      container.appendChild(img);
-    }
+    // 使用統一的序列圖片生成函式
+    AnimationManager.generateSequenceImages(container, {
+      count: GAME_CONFIG.ANIMATION.BUTTON_FRAMES,
+      basePath: 'assets/btn/',
+      prefix: buttonName,
+      extension: 'webp',
+      className: 'btn-image',
+      alt: buttonName,
+    });
   }
 }
 
