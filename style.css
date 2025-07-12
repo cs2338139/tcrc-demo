@@ -50,7 +50,7 @@ body {
 
   #timers-container {
     position: absolute;
-    top: 10%;
+    top: 5%;
     left: 0;
     width: 100%;
     display: flex;
@@ -70,7 +70,7 @@ body {
     width: 100%;
     max-width: 400px;
     aspect-ratio: 1/1;
-    top: 25%;
+    top: 20%;
     left: 50%;
     transform: translateX(-50%);
 
@@ -110,7 +110,7 @@ body {
 
   #btn-container {
     position: absolute;
-    top: 85%;
+    top: 80%;
     display: flex;
     width: 100%;
     justify-content: space-around;
