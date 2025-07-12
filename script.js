@@ -313,5 +313,5 @@ document.addEventListener('DOMContentLoaded', function () {
   qBtnGroup.addEventListener('click', () => playButtonAnimation('q', qBtnGroup));
   sunBtnGroup.addEventListener('click', () => playButtonAnimation('sun', sunBtnGroup));
 
-  // loadingAnimation();
+  loadingAnimation();
 });
