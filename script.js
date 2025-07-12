@@ -1,300 +1,464 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const loadingContainer = document.getElementById('loading-container');
-    const content = document.getElementById('content');
-    const btnContainer = document.getElementById('btn-container');
-    const pepper = document.getElementById('pepper');
-    const cum = document.getElementById('cum');
-    const brownPotion = document.getElementById('brown-potion');
-    const rewardContainer = document.getElementById('reward-container');
-    const snakeBtn = document.getElementById('snake-btn');
-    const qBtn = document.getElementById('q-btn');
-    const sunBtn = document.getElementById('sun-btn');
+// 遊戲常量配置
+const GAME_CONFIG = {
+  LOADING: {
+    TOTAL_IMAGES: 8,
+    DISPLAY_DURATION: 200,
+    FADE_DELAY: 100,
+    INITIAL_DELAY: 500,
+    FINAL_DELAY: 200,
+  },
+  ANIMATION: {
+    FRAMES_PER_SECOND: 12,
+    BUTTON_FRAMES: 16,
+    SNAKE_CIRCLE_FRAMES: 19,
+    BUTTON_DURATION: 300,
+  },
+  BUTTON: {
+    SNAKE: 'snake',
+    Q: 'q',
+    SUN: 'sun',
+  },
+  BUTTON_IMAGES: {
+    SNAKE: 'Snake',
+    Q: 'Q',
+    SUN: 'Sun',
+  },
+  AUDIO: {
+    BUTTON: 'button',
+    RESULT_NORMAL: 'result-normal',
+    RESULT_SPECIAL: 'result-special',
+  },
+  RESULT: {
+    TYPES: {
+      RESULT_1: 'result-1',
+      RESULT_2: 'result-2',
+      RESULT_3: 'result-3',
+      RESULT_4: 'result-4',
+    },
+    IMAGES: {
+      'result-1': 'assets/result/cucumber19.webp',
+      'result-2': 'assets/result/pepper19.webp',
+      'result-3': 'assets/result/together19.webp',
+      'result-4': 'assets/result/together+shot.webp',
+    },
+  },
+  RANDOM_THRESHOLDS: {
+    RESULT_4: 0.99,
+    RESULT_3: 0.96,
+    RESULT_2: 0.5,
+  },
+};
 
-    // 隱藏所有獎勵圖片
-    pepper.classList.add('hidden');
-    cum.classList.add('hidden');
-    brownPotion.classList.add('hidden');
+// 遊戲狀態管理
+class GameState {
+  constructor() {
+    this.buttonStates = {
+      [GAME_CONFIG.BUTTON.SNAKE]: { isAnimating: false },
+      [GAME_CONFIG.BUTTON.Q]: { isAnimating: false },
+      [GAME_CONFIG.BUTTON.SUN]: { isAnimating: false },
+    };
 
-    const snakeBtnList=[
-        'assets/btn/Snake1.png',
-        'assets/btn/Snake2.png',
-        'assets/btn/Snake3.png',
-        'assets/btn/Snake4.png',
-        'assets/btn/Snake5.png',
-        'assets/btn/Snake6.png',
-        'assets/btn/Snake7.png',
-        'assets/btn/Snake8.png',
-        'assets/btn/Snake9.png',
-        'assets/btn/Snake10.png',
-        'assets/btn/Snake11.png',
-        'assets/btn/Snake12.png',
-        'assets/btn/Snake13.png',
-        'assets/btn/Snake14.png',
-        'assets/btn/Snake15.png',
-        'assets/btn/Snake16.png',
-    ]
-    const qBtnList=[
-        'assets/btn/Q1.png',
-        'assets/btn/Q2.png',
-        'assets/btn/Q3.png',
-        'assets/btn/Q4.png',
-        'assets/btn/Q5.png',
-        'assets/btn/Q6.png',
-        'assets/btn/Q7.png',
-        'assets/btn/Q8.png',
-        'assets/btn/Q9.png',
-        'assets/btn/Q10.png',
-        'assets/btn/Q11.png',
-        'assets/btn/Q12.png',
-        'assets/btn/Q13.png',
-        'assets/btn/Q14.png',
-        'assets/btn/Q15.png',
-        'assets/btn/Q16.png',
-    ]
-    const sunBtnList=[
-        'assets/btn/Sun1.png',
-        'assets/btn/Sun2.png',
-        'assets/btn/Sun3.png',
-        'assets/btn/Sun4.png',
-        'assets/btn/Sun5.png',
-        'assets/btn/Sun6.png',
-        'assets/btn/Sun7.png',
-        'assets/btn/Sun8.png',
-        'assets/btn/Sun9.png',
-        'assets/btn/Sun10.png',
-        'assets/btn/Sun11.png',
-        'assets/btn/Sun12.png',
-        'assets/btn/Sun13.png',
-        'assets/btn/Sun14.png',
-        'assets/btn/Sun15.png',
-        'assets/btn/Sun16.png',
-    ]
-    // 定義載入動畫圖片數量
-    const totalLoadingImages = 8;
+    this.timerStates = {
+      timer1: 'empty',
+      timer2: 'empty',
+      timer3: 'empty',
+      timer4: 'empty',
+    };
+  }
 
-    // 創建並預載所有載入動畫圖片
-    const loadingImages = [];
-    for (let i = 1; i <= totalLoadingImages; i++) {
-        const img = document.createElement('img');
-        img.src = `assets/loading/loading${i}.png`;
-        img.alt = `Loading ${i}`;
-        img.classList.add('loading-image');
-        loadingContainer.appendChild(img);
-        loadingImages.push(img);
+  updateTimerState(buttonType) {
+    const timers = ['timer1', 'timer2', 'timer3', 'timer4'];
+    for (const timer of timers) {
+      if (this.timerStates[timer] === 'empty') {
+        this.timerStates[timer] = buttonType;
+        break;
+      }
+    }
+  }
+
+  isGameOver() {
+    return this.timerStates.timer4 !== 'empty';
+  }
+
+  resetGame() {
+    this.timerStates = {
+      timer1: 'empty',
+      timer2: 'empty',
+      timer3: 'empty',
+      timer4: 'empty',
+    };
+  }
+}
+
+// 動畫管理器 - 統一管理所有序列圖片的生成和播放
+class AnimationManager {
+  // 統一的序列圖片生成函式
+  static generateSequenceImages(container, config) {
+    const images = [];
+    container.innerHTML = ''; // 清空現有內容
+
+    for (let i = 1; i <= config.count; i++) {
+      const img = document.createElement('img');
+      img.src = `${config.basePath}${config.prefix}${i}.${config.extension}`;
+      img.alt = config.alt || `${config.prefix} ${i}`;
+      img.classList.add(config.className);
+
+      // 第一張圖片設為 active
+      if (i === 1) {
+        img.classList.add('active');
+      }
+
+      container.appendChild(img);
+      images.push(img);
     }
 
-    // 顯示載入動畫
-    let currentLoadingIndex = 0;
-    let previousLoadingImage = null;
+    return images;
+  }
 
-    function showNextLoadingImage() {
-        if (currentLoadingIndex < totalLoadingImages) {
-            // 顯示當前載入圖片
-            const currentImage = loadingImages[currentLoadingIndex];
-            currentImage.classList.add('active');
+  // 統一的序列動畫播放函式
+  static async playSequenceAnimation(images, config) {
+    return new Promise((resolve) => {
+      let currentIndex = 0;
+      let previousImage = null;
 
-            // 在轉換完成後移除前一個圖片的active類別
-            setTimeout(() => {
-                if (previousLoadingImage) {
-                    previousLoadingImage.classList.remove('active');
-                }
-                previousLoadingImage = currentImage;
-            }, 300);
+      const animate = () => {
+        if (currentIndex < images.length) {
+          const currentImage = images[currentIndex];
+          currentImage.classList.add('active');
 
-            currentLoadingIndex++;
-            setTimeout(showNextLoadingImage, 500);
+          if (previousImage) {
+            previousImage.classList.remove('active');
+          }
+          previousImage = currentImage;
+          currentIndex++;
+
+          setTimeout(animate, config.interval);
         } else {
-            // 載入動畫完成
-            setTimeout(() => {
-                loadingContainer.style.display = 'none';
-                content.style.display = 'block';
-
-                // 開始盒子輪播動畫
-                startBoxAnimation();
-            }, 200);
+          // 動畫完成後的回調
+          if (config.onComplete) {
+            config.onComplete();
+          }
+          resolve();
         }
-    }
+      };
 
-    // 定義獎勵顯示配置
-    const REWARDS_CONFIG = {
-        snake: {
-            maxClicks: 4,
-            reward: () => showReward(['cum'])
-        },
-        q: {
-            maxClicks: 4,
-            reward: () => {
-                const random = Math.random();
-                if (random < 0.45) {
-                    showReward(['pepper']);
-                } else if (random < 0.9) {
-                    showReward(['cum']);
-                } else if (random < 0.97) {
-                    showReward(['pepper', 'cum'], { position: 'relative' });
-                } else {
-                    showReward(
-                        ['pepper', 'cum', 'brown-potion'],
-                        {
-                            pepper: { position: 'relative', transform: 'translateY(50px)' },
-                            cum: { position: 'relative', transform: 'translateY(50px)' },
-                            'brown-potion': { position: 'relative', transform: 'translateY(-50px)' }
-                        }
-                    );
-                }
+      // 支援初始延遲
+      const startDelay = config.initialDelay || 0;
+      setTimeout(animate, startDelay);
+    });
+  }
+
+  // 載入動畫（使用統一函式）
+  static async playLoadingAnimation(container, totalImages, config) {
+    const images = this.generateSequenceImages(container, {
+      count: totalImages,
+      basePath: 'assets/loading/',
+      prefix: 'loading',
+      extension: 'png',
+      className: 'loading-image',
+      alt: 'Loading',
+    });
+
+    // 使用特殊的載入動畫邏輯（保持原有的淡入淡出效果）
+    return new Promise((resolve) => {
+      let currentIndex = 0;
+      let previousImage = null;
+
+      const showNext = () => {
+        if (currentIndex < totalImages) {
+          const currentImage = images[currentIndex];
+          currentImage.classList.add('active');
+
+          setTimeout(() => {
+            if (previousImage) {
+              previousImage.classList.remove('active');
             }
-        },
-        sun: {
-            maxClicks: 4,
-            reward: () => showReward(['pepper'])
-        }
-    };
+            previousImage = currentImage;
+          }, config.FADE_DELAY);
 
-    // 點擊計數器
-    const clickCounts = {
-        snake: 0,
-        q: 0,
-        sun: 0
-    };
+          currentIndex++;
+          setTimeout(showNext, config.DISPLAY_DURATION);
+        } else {
+          setTimeout(resolve, config.FINAL_DELAY);
+        }
+      };
+
+      setTimeout(showNext, config.INITIAL_DELAY);
+    });
+  }
+
+  // 按鈕動畫（使用統一函式）
+  static async playButtonAnimation(buttonGroup, buttonType, gameState) {
+    if (gameState.buttonStates[buttonType].isAnimating) return;
+
+    const images = Array.from(buttonGroup.children);
+    gameState.buttonStates[buttonType].isAnimating = true;
+    buttonGroup.style.pointerEvents = 'none';
+
+    const interval = GAME_CONFIG.ANIMATION.BUTTON_DURATION / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
+
+    await this.playSequenceAnimation(images, {
+      interval: interval,
+      onComplete: () => {
+        // 重置按鈕狀態
+        images.forEach((img) => img.classList.remove('active'));
+        images[0].classList.add('active');
+        gameState.buttonStates[buttonType].isAnimating = false;
+        buttonGroup.style.pointerEvents = 'auto';
+      },
+    });
+  }
+
+  // Snake Circle 動畫（使用統一函式）
+  static async playSnakeCircleAnimation(container) {
+    const images = Array.from(container.children);
+    const interval = 1000 / GAME_CONFIG.ANIMATION.FRAMES_PER_SECOND;
+
+    return this.playSequenceAnimation(images, {
+      interval: interval,
+    });
+  }
+}
+
+// 音效管理器
+class AudioManager {
+  static play(fileName) {
+    const audio = new Audio(`assets/audio/${fileName}.mp3`);
+    audio.play();
+  }
+}
+
+// 結果計算器
+class ResultCalculator {
+  static calculateResult(timerStates) {
+    const { timer1, timer2, timer3, timer4 } = timerStates;
+    const allTimers = [timer1, timer2, timer3, timer4];
+
+    // 計算特定類型的數量
+    const getTypeCount = (type) => allTimers.filter((t) => t === type).length;
+
+    // 計算特定範圍內的類型數量
+    const getTypeCountInRange = (range, type) => range.filter((t) => t === type).length;
+
+    // 特殊組合檢查
+    const specialCombinations = [
+      {
+        condition: () => getTypeCountInRange([timer1, timer2], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer3, timer4], GAME_CONFIG.BUTTON.SUN) >= 1,
+        result: GAME_CONFIG.RESULT.TYPES.RESULT_3,
+      },
+      {
+        condition: () => getTypeCountInRange([timer1, timer2, timer3], GAME_CONFIG.BUTTON.SNAKE) >= 2 && getTypeCountInRange([timer4], GAME_CONFIG.BUTTON.SUN) >= 1,
+        result: GAME_CONFIG.RESULT.TYPES.RESULT_3,
+      },
+      {
+        condition: () => getTypeCountInRange([timer1], GAME_CONFIG.BUTTON.SUN) >= 1 && getTypeCountInRange([timer2, timer3], GAME_CONFIG.BUTTON.Q) >= 2 && getTypeCountInRange([timer4], GAME_CONFIG.BUTTON.SNAKE) >= 1,
+        result: GAME_CONFIG.RESULT.TYPES.RESULT_4,
+      },
+    ];
 
     // 檢查特殊組合
-    function checkSpecialCombinations() {
-        // 規則1: 太陽、蛇、問號各按2次 = 紅+綠
-        if (clickCounts.sun === 2 && clickCounts.snake === 2 ) {
-            showReward(['pepper', 'cum'], { position: 'relative' });
-            // 重置計數器
-            resetClickCounts();
-            return true;
-        }
-
-        // 規則2: 問號、太陽、蛇各按4次 = 紅+綠+shot
-        if (clickCounts.sun === 3 && clickCounts.snake === 3 && clickCounts.q === 3) {
-            showReward(
-                ['pepper', 'cum', 'brown-potion'],
-                {
-                    pepper: { position: 'relative', transform: 'translateY(50px)' },
-                    cum: { position: 'relative', transform: 'translateY(50px)' },
-                    'brown-potion': { position: 'relative', transform: 'translateY(-50px)' }
-                }
-            );
-            // 重置計數器
-            resetClickCounts();
-            return true;
-        }
-
-        return false;
+    for (const combo of specialCombinations) {
+      if (combo.condition()) return combo.result;
     }
 
-    // 重置所有計數器
-    function resetClickCounts() {
-        Object.keys(clickCounts).forEach(key => {
-            clickCounts[key] = 0;
-        });
+    // 基本數量規則
+    const snakeCount = getTypeCount(GAME_CONFIG.BUTTON.SNAKE);
+    const sunCount = getTypeCount(GAME_CONFIG.BUTTON.SUN);
+    const qCount = getTypeCount(GAME_CONFIG.BUTTON.Q);
+
+    if (snakeCount >= 3) return GAME_CONFIG.RESULT.TYPES.RESULT_1;
+    if (sunCount >= 3) return GAME_CONFIG.RESULT.TYPES.RESULT_2;
+    if (qCount >= 3) return this.getRandomResult();
+
+    return this.getRandomResult();
+  }
+
+  static getRandomResult() {
+    const randomValue = Math.random();
+    const { RESULT_4, RESULT_3, RESULT_2 } = GAME_CONFIG.RANDOM_THRESHOLDS;
+
+    if (randomValue >= RESULT_4) return GAME_CONFIG.RESULT.TYPES.RESULT_4;
+    if (randomValue >= RESULT_3) return GAME_CONFIG.RESULT.TYPES.RESULT_3;
+    if (randomValue >= RESULT_2) return GAME_CONFIG.RESULT.TYPES.RESULT_2;
+    return GAME_CONFIG.RESULT.TYPES.RESULT_1;
+  }
+}
+
+// UI 管理器
+class UIManager {
+  constructor(elements) {
+    this.elements = elements;
+  }
+
+  updateTimerImages(timerStates) {
+    this.elements.timer1.src = `assets/timer/${timerStates.timer1}.webp`;
+    this.elements.timer2.src = `assets/timer/${timerStates.timer2}.webp`;
+    this.elements.timer3.src = `assets/timer/${timerStates.timer3}.webp`;
+    this.elements.timer4.src = `assets/timer/${timerStates.timer4}.webp`;
+  }
+
+  async showLoadingScreen() {
+    return AnimationManager.playLoadingAnimation(this.elements.loadingContainer, GAME_CONFIG.LOADING.TOTAL_IMAGES, GAME_CONFIG.LOADING);
+  }
+
+  hideLoadingScreen() {
+    this.elements.loadingContainer.style.display = 'none';
+    this.elements.contentContainer.style.display = 'block';
+  }
+
+  async lockInterface() {
+    this.elements.btnContainer.style.pointerEvents = 'none';
+  }
+
+  async flashTimersContainer() {
+    const container = this.elements.timersContainer;
+    const flashSequence = [
+      { opacity: 0, delay: 500 },
+      { opacity: 1, delay: 500 },
+      { opacity: 0, delay: 500 },
+      { opacity: 1, delay: 0 },
+    ];
+
+    for (const step of flashSequence) {
+      container.style.opacity = step.opacity;
+      if (step.delay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, step.delay));
+      }
     }
+  }
 
-    // 通用顯示獎勵函數
-    function showReward(items, styles = {}) {
-        items.forEach(item => {
-            const element = document.getElementById(item);
-            element.classList.remove('hidden');
+  async hideGameElements() {
+    this.elements.btnContainer.style.opacity = 0;
+    this.elements.timersContainer.style.opacity = 0;
+    this.elements.btnContainer.style.pointerEvents = 'none';
+  }
 
-            // 如果有特定樣式，則應用樣式
-            if (styles[item]) {
-                Object.assign(element.style, styles[item]);
-            } else if (typeof styles === 'object' && !Array.isArray(styles)) {
-                Object.assign(element.style, styles);
-            }
-        });
-        btnContainer.classList.add('hidden');
-    }
+  showResult(resultType) {
+    const imageSrc = GAME_CONFIG.RESULT.IMAGES[resultType];
+    this.elements.resultImage.src = imageSrc;
+    this.elements.resultImage.style.opacity = 1;
+    this.elements.snakeCircleContainer.style.opacity = 0;
 
-    // 通用按鈕點擊處理函數
-    function handleButtonClick(buttonType) {
-        // console.log(buttonType);
+    // 播放對應音效
+    const isSpecialResult = resultType === GAME_CONFIG.RESULT.TYPES.RESULT_3 || resultType === GAME_CONFIG.RESULT.TYPES.RESULT_4;
+    const audioType = isSpecialResult ? GAME_CONFIG.AUDIO.RESULT_SPECIAL : GAME_CONFIG.AUDIO.RESULT_NORMAL;
+    AudioManager.play(audioType);
+  }
 
-        clickCounts[buttonType]++;
-        // console.log(clickCounts);
+  initializeSnakeCircleImages() {
+    // 使用統一的序列圖片生成函式
+    AnimationManager.generateSequenceImages(this.elements.snakeCircleContainer, {
+      count: GAME_CONFIG.ANIMATION.SNAKE_CIRCLE_FRAMES,
+      basePath: 'assets/snakecircle/',
+      prefix: 'snakecircle',
+      extension: 'webp',
+      className: 'snake-circle-image',
+      alt: 'Snake Circle',
+    });
+  }
 
-        // 先檢查特殊組合
-        if (checkSpecialCombinations()) {
-            return;
-        }
+  initializeButtonImages() {
+    // 使用統一的序列圖片生成函式生成所有按鈕圖片
+    this.initializeButtonGroup(this.elements.snakeBtnGroup, GAME_CONFIG.BUTTON_IMAGES.SNAKE);
+    this.initializeButtonGroup(this.elements.qBtnGroup, GAME_CONFIG.BUTTON_IMAGES.Q);
+    this.initializeButtonGroup(this.elements.sunBtnGroup, GAME_CONFIG.BUTTON_IMAGES.SUN);
+  }
 
-        // 如果沒有觸發特殊組合，檢查單個按鈕的最大點擊次數
-        if (clickCounts[buttonType] >= REWARDS_CONFIG[buttonType].maxClicks) {
-            clickCounts[buttonType] = 0;
-            REWARDS_CONFIG[buttonType].reward();
-        }
-    }
+  initializeButtonGroup(container, buttonName) {
+    // 使用統一的序列圖片生成函式
+    AnimationManager.generateSequenceImages(container, {
+      count: GAME_CONFIG.ANIMATION.BUTTON_FRAMES,
+      basePath: 'assets/btn/',
+      prefix: buttonName,
+      extension: 'webp',
+      className: 'btn-image',
+      alt: buttonName,
+    });
+  }
+}
 
-    // 按鈕動畫狀態
-    const buttonStates = {
-        snake: { isAnimating: false, preloadedImages: [] },
-        q: { isAnimating: false, preloadedImages: [] },
-        sun: { isAnimating: false, preloadedImages: [] }
+// 主遊戲類
+class TCRCGame {
+  constructor() {
+    this.gameState = new GameState();
+    this.elements = this.getElements();
+    this.ui = new UIManager(this.elements);
+    this.initializeGame();
+  }
+
+  getElements() {
+    return {
+      loadingContainer: document.getElementById('loading-container'),
+      contentContainer: document.getElementById('content-container'),
+      btnContainer: document.getElementById('btn-container'),
+      resultImage: document.getElementById('result-img'),
+      snakeBtnGroup: document.getElementById('snake-btn-group'),
+      qBtnGroup: document.getElementById('q-btn-group'),
+      sunBtnGroup: document.getElementById('sun-btn-group'),
+      snakeCircleContainer: document.getElementById('snake-circle-container'),
+      timersContainer: document.getElementById('timers-container'),
+      timer1: document.getElementById('timer-1'),
+      timer2: document.getElementById('timer-2'),
+      timer3: document.getElementById('timer-3'),
+      timer4: document.getElementById('timer-4'),
     };
+  }
 
-    // 預載按鈕圖片
-    function preloadButtonImages() {
-        // 預載蛇按鈕圖片
-        snakeBtnList.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            buttonStates.snake.preloadedImages.push(img);
-        });
+  async initializeGame() {
+    // 初始化 snake circle 圖片
+    this.ui.initializeSnakeCircleImages();
 
-        // 預載問號按鈕圖片
-        qBtnList.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            buttonStates.q.preloadedImages.push(img);
-        });
+    // 初始化按鈕圖片
+    this.ui.initializeButtonImages();
 
-        // 預載太陽按鈕圖片
-        sunBtnList.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            buttonStates.sun.preloadedImages.push(img);
-        });
-    }
+    // 設置按鈕事件監聽器
+    this.setupEventListeners();
+
+    // 播放載入動畫
+    await this.ui.showLoadingScreen();
+    this.ui.hideLoadingScreen();
+  }
+
+  setupEventListeners() {
+    this.elements.snakeBtnGroup.addEventListener('click', () => this.handleButtonPress(GAME_CONFIG.BUTTON.SNAKE));
+    this.elements.qBtnGroup.addEventListener('click', () => this.handleButtonPress(GAME_CONFIG.BUTTON.Q));
+    this.elements.sunBtnGroup.addEventListener('click', () => this.handleButtonPress(GAME_CONFIG.BUTTON.SUN));
+  }
+
+  async handleButtonPress(buttonType) {
+    const buttonGroup = this.elements[`${buttonType}BtnGroup`];
+
+    // 播放按鈕音效
+    AudioManager.play(GAME_CONFIG.AUDIO.BUTTON);
 
     // 播放按鈕動畫
-    function playButtonAnimation(buttonType, button, imageList) {
-        if (buttonStates[buttonType].isAnimating) return;
+    await AnimationManager.playButtonAnimation(buttonGroup, buttonType, this.gameState);
 
-        buttonStates[buttonType].isAnimating = true;
-        button.style.pointerEvents = 'none'; // 鎖定按鈕
+    // 處理遊戲邏輯
+    await this.processGameLogic(buttonType);
+  }
 
-        let frameIndex = 0;
-        const framesPerSecond = 16; // 16張圖片在0.5秒內播完
-        const interval = 500 / framesPerSecond;
+  async processGameLogic(buttonType) {
+    // 更新遊戲狀態
+    this.gameState.updateTimerState(buttonType);
+    this.ui.updateTimerImages(this.gameState.timerStates);
 
-        const animate = () => {
-            if (frameIndex < imageList.length) {
-                button.src = imageList[frameIndex];
-                frameIndex++;
-                setTimeout(animate, interval);
-            } else {
-                // 動畫結束，重置狀態
-                button.src = imageList[0];
-                buttonStates[buttonType].isAnimating = false;
-                button.style.pointerEvents = 'auto'; // 解鎖按鈕
+    // 檢查遊戲是否結束
+    if (!this.gameState.isGameOver()) return;
 
-                // 處理按鈕點擊邏輯
-                handleButtonClick(buttonType);
-            }
-        };
+    // 遊戲結束流程
+    await this.ui.lockInterface();
+    await this.ui.flashTimersContainer();
+    await this.ui.hideGameElements();
+    await AnimationManager.playSnakeCircleAnimation(this.elements.snakeCircleContainer);
 
-        animate();
-    }
+    // 計算並顯示結果
+    const result = ResultCalculator.calculateResult(this.gameState.timerStates);
+    this.ui.showResult(result);
+  }
+}
 
-    // 修改按鈕點擊事件綁定
-    snakeBtn.addEventListener('click', () => playButtonAnimation('snake', snakeBtn, snakeBtnList));
-    qBtn.addEventListener('click', () => playButtonAnimation('q', qBtn, qBtnList));
-    sunBtn.addEventListener('click', () => playButtonAnimation('sun', sunBtn, sunBtnList));
-
-    // 在頁面加載時預載按鈕圖片
-    preloadButtonImages();
-
-    // 開始載入動畫
-    setTimeout(showNextLoadingImage, 500);
+// 當 DOM 載入完成時啟動遊戲
+document.addEventListener('DOMContentLoaded', () => {
+  new TCRCGame();
 });
