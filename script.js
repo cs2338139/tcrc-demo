@@ -3,9 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const contentContainer = document.getElementById('content-container');
   const btnContainer = document.getElementById('btn-container');
-  const pepper = document.getElementById('pepper');
-  const cum = document.getElementById('cum');
-  const brownPotion = document.getElementById('brown-potion');
+  const resultImage = document.getElementById('result-img');
   const snakeBtnGroup = document.getElementById('snake-btn-group');
   const qBtnGroup = document.getElementById('q-btn-group');
   const sunBtnGroup = document.getElementById('sun-btn-group');
@@ -112,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
       await new Promise((resolve) => {
         btnContainer.style.opacity = 0;
         timersContainer.style.opacity = 0;
+        btnContainer.style.pointerEvents = 'none';
         resolve();
       });
     }
@@ -197,6 +196,26 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     };
 
+    function setResultImg(result) {
+      switch (result) {
+        case 'result-1': {
+          resultImage.src = 'assets/result/cucumber19.webp';
+        }
+        case 'result-2': {
+          resultImage.src = 'assets/result/pepper19.webp';
+        }
+        case 'result-3': {
+          resultImage.src = 'assets/result/together19.webp';
+        }
+        case 'result-4': {
+          resultImage.src = 'assets/result/together+shot.webp';
+        }
+      }
+
+      resultImage.style.opacity = 1;
+      snakeCircleContainer.style.opacity = 0;
+    }
+
     const isGameOver = () => TIMER_STATES.timer4 === 'empty';
 
     updateTimerState();
@@ -233,6 +252,9 @@ document.addEventListener('DOMContentLoaded', function () {
     await animate();
 
     const result = await checkResult();
+
+    setResultImg(result);
+
     console.log(result);
   }
 
