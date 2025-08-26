@@ -6,6 +6,7 @@ const GAME_CONFIG = {
     FADE_DELAY: 100,
     INITIAL_DELAY: 500,
     FINAL_DELAY: 200,
+    STAY_DURATION: 3000,
   },
   ANIMATION: {
     FRAMES_PER_SECOND: 12,
@@ -149,43 +150,34 @@ class AnimationManager {
     });
   }
 
-  // 載入動畫（使用統一函式）
-  static async playLoadingAnimation(container, totalImages, config) {
-    const images = this.generateSequenceImages(container, {
-      count: totalImages,
-      basePath: 'assets/loading/',
-      prefix: 'loading',
-      extension: 'png',
-      className: 'loading-image',
-      alt: 'Loading',
-    });
+  // 載入動畫：一次顯示多行文字，停留後整塊淡出
+  static async playLoadingAnimation(container, _totalImages, config) {
+    // 多行文字（與提供畫面一致）
+    const lines = ['press the bottons', '4 keys words', 'and', 'get the drinks', '', 'tap to the next'];
 
-    // 使用特殊的載入動畫邏輯（保持原有的淡入淡出效果）
-    return new Promise((resolve) => {
-      let currentIndex = 0;
-      let previousImage = null;
+    // 建立或取得文字容器
+    let textEl = container.querySelector('.loading-text');
+    if (!textEl) {
+      textEl = document.createElement('div');
+      textEl.className = 'loading-text';
+      container.appendChild(textEl);
+    }
 
-      const showNext = () => {
-        if (currentIndex < totalImages) {
-          const currentImage = images[currentIndex];
-          currentImage.classList.add('active');
+    // 以 <br> 連接行，呈現為多行
+    textEl.innerHTML = lines.join('<br>');
 
-          setTimeout(() => {
-            if (previousImage) {
-              previousImage.classList.remove('active');
-            }
-            previousImage = currentImage;
-          }, config.FADE_DELAY);
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-          currentIndex++;
-          setTimeout(showNext, config.DISPLAY_DURATION);
-        } else {
-          setTimeout(resolve, config.FINAL_DELAY);
-        }
-      };
+    // 初始延遲後淡入
+    await wait(config.INITIAL_DELAY);
+    textEl.classList.add('active');
 
-      setTimeout(showNext, config.INITIAL_DELAY);
-    });
+    // 停留指定時間
+    await wait(config.STAY_DURATION);
+
+    // 淡出
+    textEl.classList.remove('active');
+    await wait(config.FADE_DELAY + config.FINAL_DELAY);
   }
 
   // 按鈕動畫（使用統一函式）
