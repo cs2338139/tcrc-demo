@@ -22,7 +22,7 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
   background-color: #050505;
   background-image: url("assets/background.webp");
   background-size: cover;
@@ -35,24 +35,26 @@ body {
   width: 100%;
   max-width: 420px;
   min-height: 100vh;
-  /* padding: 24px 16px; */
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   position: relative;
   backdrop-filter: blur(4px);
+  padding: 24px 16px;
 }
 
 .screen {
   width: 100%;
   background: var(--surface);
-  /* border-radius: 20px; */
+  border-radius: 20px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  justify-content: center;
   gap: 20px;
-  /* box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35); */
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+  min-height: calc(100vh - 48px);
 }
 
 .screen-header {
