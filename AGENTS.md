@@ -19,3 +19,6 @@ Follow the repository’s history: concise, sentence-case, imperative messages (
 
 ## Assets & Media Handling
 Optimize new images to match existing resolutions and compression; keep audio in `assets/audio` and export to `.mp3`. When swapping media, retain filenames where possible so cache-busting is minimal; otherwise update the corresponding `GAME_CONFIG` paths and verify they load in the browser console.
+
+
+Please answer in Traditional Chinese
