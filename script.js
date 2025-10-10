@@ -18,6 +18,11 @@ const LOADING_LABELS = {
   blend: { zh: "調味中", en: "Blending flavors" },
 };
 
+const SECTION_TITLES = {
+  pairing: { zh: "調味靈感", en: "Flavor Pairings" },
+  tips: { zh: "享用提醒", en: "How to Enjoy" },
+};
+
 const INTRO_COPY = {
   kicker: { zh: "風味測驗", en: "Flavor Quiz" },
   title: {
@@ -118,6 +123,30 @@ const RESULTS = {
         zh: "你是個偏感受型的人。對你來說，安全感來自於「被理解」與「純淨的存在感」。你習慣觀察，願意用柔軟對待世界。你不是軟弱，只是你相信——柔和是一種力量。",
         en: "You lead with feeling. Security is born from being understood and sensing genuine presence. You observe first, and offer softness to the world—not out of weakness, but because you believe gentleness is its own power.",
       },
+      callout: { zh: "柔和頻率", en: "Gentle Frequency" },
+      stats: [
+        { label: { zh: "柔軟度", en: "Softness" }, value: 92 },
+        { label: { zh: "共感力", en: "Empathy" }, value: 88 },
+        { label: { zh: "冒險指數", en: "Adventure Index" }, value: 35 },
+      ],
+      keywords: {
+        zh: "關鍵字：柔軟 / 感受 / 共鳴",
+        en: "Keywords: Soft / Sensory / Resonant",
+      },
+      pairing: {
+        zh: "推薦風味：接骨木花、白桃蘇打、微甜琴酒。",
+        en: "Suggested pairings: Elderflower, white peach soda, lightly sweetened gin.",
+      },
+      tips: {
+        zh: [
+          "最適合在午後陽光或溫暖燈光下細細品味。",
+          "搭配療癒系歌單或靜靜閱讀能放大這股柔和能量。",
+        ],
+        en: [
+          "Best appreciated in soft afternoon light or a warm-lit corner.",
+          "Pair with a soothing playlist or a quiet read to amplify the calm.",
+        ],
+      },
     },
     b: {
       emoji: "🥒",
@@ -125,6 +154,30 @@ const RESULTS = {
       body: {
         zh: "你習慣自己走在霧中，帶著一點神秘、一點距離感。你不常主動吐露心事，但其實情緒很深。你不害怕孤獨，反而在混沌中找到了自己的秩序。",
         en: "You navigate the fog on your own terms, carrying mystery and measured distance. You seldom open up first, yet your emotions run deep. Solitude doesn't scare you—you build your own order inside the haze.",
+      },
+      callout: { zh: "霧中羅盤", en: "Compass in the Fog" },
+      stats: [
+        { label: { zh: "洞察力", en: "Perception" }, value: 85 },
+        { label: { zh: "神秘指數", en: "Mystique" }, value: 72 },
+        { label: { zh: "溫度", en: "Warmth" }, value: 60 },
+      ],
+      keywords: {
+        zh: "關鍵字：洞察 / 神秘 / 節奏",
+        en: "Keywords: Insight / Mystery / Rhythm",
+      },
+      pairing: {
+        zh: "推薦風味：白茶、青蘋果氣泡、杜松冷萃。",
+        en: "Suggested pairings: White tea, green apple fizz, chilled juniper.",
+      },
+      tips: {
+        zh: [
+          "微霧或冷色燈光能讓這份味道更純粹。",
+          "與同樣步調細緩的人分享，交流會更加深刻。",
+        ],
+        en: [
+          "Mist-filled light or cool tones keep the flavor crisp.",
+          "Share it with someone who moves at your deliberate pace for deeper conversation.",
+        ],
       },
     },
   },
@@ -136,6 +189,30 @@ const RESULTS = {
         zh: "你是活在五感裡的人，喜歡一切濃烈、真實的感覺。香氣、影像、情緒，通通要到位才行。你排斥無聊，追求刺激與情緒釋放，就算會燙傷也不願活得平淡。",
         en: "You live through every sense, craving what is bold and real. Scents, visuals, emotions—they all need to hit full force. You reject boredom and chase release, even if the spark might burn.",
       },
+      callout: { zh: "熱度指數", en: "Heat Index" },
+      stats: [
+        { label: { zh: "濃烈值", en: "Intensity" }, value: 95 },
+        { label: { zh: "探索慾", en: "Curiosity" }, value: 78 },
+        { label: { zh: "耐心度", en: "Patience" }, value: 20 },
+      ],
+      keywords: {
+        zh: "關鍵字：濃烈 / 追求 / 直覺",
+        en: "Keywords: Fierce / Seeking / Instinctive",
+      },
+      pairing: {
+        zh: "推薦風味：龍舌蘭、粉紅胡椒、葡萄柚皮氣泡。",
+        en: "Suggested pairings: Tequila, pink peppercorn, grapefruit zest fizz.",
+      },
+      tips: {
+        zh: [
+          "派對開場或週末夜冰鎮後最能展現張力。",
+          "搭配節奏強烈的歌單與香辣小食，讓熱度持續升溫。",
+        ],
+        en: [
+          "Serve it ice-cold to kick off a party or a late-weekend night.",
+          "Match with a driving playlist and spicy bites to keep the heat climbing.",
+        ],
+      },
     },
     b: {
       emoji: "🌶️",
@@ -143,6 +220,30 @@ const RESULTS = {
       body: {
         zh: "你的生活像一場戲，有情節、有伏筆、有情緒高潮。你討厭平淡，討厭模糊，你要的是那種「能被寫進劇本的故事」。你的感性很強，也可能過度反應，但也因此你總是讓人難以忘記。",
         en: "Life unfolds like a screenplay for you—foreshadowing, twists, and emotional peaks. You loathe the bland or blurry; you want moments worthy of a script. Your feelings run high, sometimes too high, and that’s exactly why no one forgets you.",
+      },
+      callout: { zh: "戲劇張力", en: "Dramatic Pulse" },
+      stats: [
+        { label: { zh: "情緒波幅", en: "Emotional Waves" }, value: 92 },
+        { label: { zh: "故事感", en: "Story Arc" }, value: 88 },
+        { label: { zh: "穩定度", en: "Stability" }, value: 28 },
+      ],
+      keywords: {
+        zh: "關鍵字：情緒 / 故事 / 反差",
+        en: "Keywords: Emotional / Narrative / Contrast",
+      },
+      pairing: {
+        zh: "推薦風味：黑胡椒萊姆、薰衣草煙燻、深色蘭姆。",
+        en: "Suggested pairings: Black pepper lime, smoked lavender, dark rum.",
+      },
+      tips: {
+        zh: [
+          "在戲劇燈光或現場演出後細品，情緒餘韻最完整。",
+          "搭配具有層次的甜點或巧克力，讓高低起伏更迷人。",
+        ],
+        en: [
+          "Savor it after a show or under theatrical lighting to ride the lingering emotions.",
+          "Pair with layered desserts or dark chocolate to echo the highs and lows.",
+        ],
       },
     },
   },
@@ -264,17 +365,64 @@ function renderResult() {
       : "b";
 
   const result = RESULTS[finalType][variant];
+  const statsHtml = result.stats
+    .map(
+      (entry) => `
+        <li class="stat-item">
+          <div class="stat-meta">
+            <span>${entry.label[state.language]}</span>
+            <span class="stat-value">${entry.value}%</span>
+          </div>
+          <div class="stat-bar">
+            <span class="stat-bar-fill" style="width: ${entry.value}%"></span>
+          </div>
+        </li>
+      `
+    )
+    .join("");
+  const tips = result.tips?.[state.language] ?? [];
+  const tipsHtml = tips
+    .map((tip) => `<li>${tip}</li>`)
+    .join("");
 
   screenContainer.innerHTML = `
-    <div class="result-card">
-      <div class="result-emoji">${result.emoji}</div>
-      <h2 class="result-title">${result.title[state.language]}</h2>
-      <p class="result-body">${result.body[state.language]}</p>
+    <article class="result-layout">
+      <header class="result-header">
+        <div class="result-header-left">
+          <div class="result-emoji-bubble">${result.emoji}</div>
+          <div class="result-title-group">
+            <span class="result-kicker">${INTRO_COPY.kicker[state.language]}</span>
+            <h2 class="result-title">${result.title[state.language]}</h2>
+            <p class="result-highlight">${result.keywords[state.language]}</p>
+          </div>
+        </div>
+        <aside class="result-panel">
+          <div class="result-callout">${result.callout[state.language]}</div>
+          <ul class="result-stats">
+            ${statsHtml}
+          </ul>
+        </aside>
+      </header>
+      <section class="result-body-block">
+        <p class="result-body-text">${result.body[state.language]}</p>
+      </section>
+      <section class="result-section">
+        <h3 class="result-section-title">${SECTION_TITLES.pairing[state.language]}</h3>
+        <p class="result-section-text">${result.pairing[state.language]}</p>
+      </section>
+      <section class="result-section">
+        <h3 class="result-section-title">${SECTION_TITLES.tips[state.language]}</h3>
+        <ul class="result-list">
+          ${tipsHtml}
+        </ul>
+      </section>
+    </article>
+    <div class="result-actions">
+      <p class="tagline result-tagline">${REDEEM_LINE[state.language]}</p>
+      <button class="btn restart" type="button">
+        ${state.language === "zh" ? "再玩一次" : "Play again"}
+      </button>
     </div>
-    <p class="tagline">${REDEEM_LINE[state.language]}</p>
-    <button class="btn restart" type="button">
-      ${state.language === "zh" ? "再玩一次" : "Play again"}
-    </button>
   `;
 
   screenContainer.querySelector(".btn.restart").addEventListener("click", () => {
