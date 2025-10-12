@@ -118,6 +118,7 @@ const RESULTS = {
   cucumber: {
     a: {
       emoji: '🥒',
+      image: 'assets/result/kindcucumber.png',
       title: { zh: '單純善良的瓜', en: 'Pure-Hearted Cucumber' },
       body: {
         zh: '你是個偏感受型的人。對你來說，安全感來自於「被理解」與「純淨的存在感」。你習慣觀察，願意用柔軟對待世界。你不是軟弱，只是你相信——柔和是一種力量。',
@@ -144,6 +145,7 @@ const RESULTS = {
     },
     b: {
       emoji: '🥒',
+      image: 'assets/result/Smartcucumber.png',
       title: { zh: '理性聰明的瓜', en: 'Clear-Minded Cucumber' },
       body: {
         zh: '你習慣自己走在霧中，帶著一點神秘、一點距離感。你不常主動吐露心事，但其實情緒很深。你不害怕孤獨，反而在混沌中找到了自己的秩序。',
@@ -172,6 +174,7 @@ const RESULTS = {
   pepper: {
     a: {
       emoji: '🌶️',
+      image: 'assets/result/livepepper.png',
       title: { zh: '熱烈追求的椒', en: 'Passion-Chaser Pepper' },
       body: {
         zh: '你是活在五感裡的人，喜歡一切濃烈、真實的感覺。香氣、影像、情緒，通通要到位才行。你排斥無聊，追求刺激與情緒釋放，就算會燙傷也不願活得平淡。',
@@ -198,6 +201,7 @@ const RESULTS = {
     },
     b: {
       emoji: '🌶️',
+      image: 'assets/result/upsetpepper.png',
       title: { zh: '起起落落的椒', en: 'Plot-Twist Pepper' },
       body: {
         zh: '你的生活像一場戲，有情節、有伏筆、有情緒高潮。你討厭平淡，討厭模糊，你要的是那種「能被寫進劇本的故事」。你的感性很強，也可能過度反應，但也因此你總是讓人難以忘記。',
@@ -358,7 +362,9 @@ function renderResult() {
         </div>
         <div class="result-header-content">
           <div class="result-header-left">
-            <div class="result-emoji-bubble">${result.emoji}</div>
+            <div class="result-emoji-bubble">
+              <img class="result-emoji-image" src="${result.image}" alt="${result.title[state.language]}">
+            </div>
           </div>
           <aside class="result-panel">
             <div class="result-callout">${result.callout[state.language]}</div>
