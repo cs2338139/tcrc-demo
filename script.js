@@ -19,8 +19,8 @@ const LOADING_LABELS = {
 };
 
 const SECTION_TITLES = {
-  pairing: { zh: '調味靈感', en: 'Flavor Pairings' },
-  tips: { zh: '享用提醒', en: 'How to Enjoy' },
+  pairing: { zh: '搭配提醒', en: 'Pairing Reminders' },
+  tips: { zh: '溫馨提醒', en: 'Warm Reminder' },
 };
 
 const INTRO_COPY = {
@@ -134,12 +134,12 @@ const RESULTS = {
         en: 'Keywords: Soft / Sensory / Resonant',
       },
       pairing: {
-        zh: '推薦風味：接骨木花、白桃蘇打、微甜琴酒。',
-        en: 'Suggested pairings: Elderflower, white peach soda, lightly sweetened gin.',
+        zh: '芒果莎莎醬 x 青醬塔可，先喝再吃',
+        en: 'Mango salsa x pesto taco, sip first then bite.',
       },
       tips: {
-        zh: ['最適合在午後陽光或溫暖燈光下細細品味。', '搭配療癒系歌單或靜靜閱讀能放大這股柔和能量。'],
-        en: ['Best appreciated in soft afternoon light or a warm-lit corner.', 'Pair with a soothing playlist or a quiet read to amplify the calm.'],
+        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
+        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
       },
     },
     b: {
@@ -160,12 +160,12 @@ const RESULTS = {
         en: 'Keywords: Insight / Mystery / Rhythm',
       },
       pairing: {
-        zh: '推薦風味：白茶、青蘋果氣泡、杜松冷萃。',
-        en: 'Suggested pairings: White tea, green apple fizz, chilled juniper.',
+        zh: '芒果莎莎醬 x 青醬塔可，先喝再吃',
+        en: 'Mango salsa x pesto taco, sip first then bite.',
       },
       tips: {
-        zh: ['微霧或冷色燈光能讓這份味道更純粹。', '與同樣步調細緩的人分享，交流會更加深刻。'],
-        en: ['Mist-filled light or cool tones keep the flavor crisp.', 'Share it with someone who moves at your deliberate pace for deeper conversation.'],
+        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
+        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
       },
     },
   },
@@ -188,12 +188,12 @@ const RESULTS = {
         en: 'Keywords: Fierce / Seeking / Instinctive',
       },
       pairing: {
-        zh: '推薦風味：龍舌蘭、粉紅胡椒、葡萄柚皮氣泡。',
-        en: 'Suggested pairings: Tequila, pink peppercorn, grapefruit zest fizz.',
+        zh: '芒果莎莎醬 × 紅醬塔可，先吃再喝',
+        en: 'Mango salsa × roja taco, bite first then sip.',
       },
       tips: {
-        zh: ['派對開場或週末夜冰鎮後最能展現張力。', '搭配節奏強烈的歌單與香辣小食，讓熱度持續升溫。'],
-        en: ['Serve it ice-cold to kick off a party or a late-weekend night.', 'Match with a driving playlist and spicy bites to keep the heat climbing.'],
+        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
+        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
       },
     },
     b: {
@@ -214,12 +214,12 @@ const RESULTS = {
         en: 'Keywords: Emotional / Narrative / Contrast',
       },
       pairing: {
-        zh: '推薦風味：黑胡椒萊姆、薰衣草煙燻、深色蘭姆。',
-        en: 'Suggested pairings: Black pepper lime, smoked lavender, dark rum.',
+        zh: '芒果莎莎醬 × 紅醬塔可，先吃再喝',
+        en: 'Mango salsa × roja taco, bite first then sip.',
       },
       tips: {
-        zh: ['在戲劇燈光或現場演出後細品，情緒餘韻最完整。', '搭配具有層次的甜點或巧克力，讓高低起伏更迷人。'],
-        en: ['Savor it after a show or under theatrical lighting to ride the lingering emotions.', 'Pair with layered desserts or dark chocolate to echo the highs and lows.'],
+        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
+        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
       },
     },
   },
@@ -290,7 +290,6 @@ function renderQuestion(index) {
     .map(
       (option) => `
         <button class="btn option-btn" type="button" data-type="${option.type}">
-          <span class="option-emoji">${option.emoji}</span>
           <span>${option.label[state.language]}</span>
         </button>
       `
