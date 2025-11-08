@@ -140,7 +140,7 @@ const RESULTS = {
       },
       recommendedCocktails: {
         zh: ['1. 黑次李琴費士   Sloegin fizz', '2. 蜜蜂膝蓋Bee’s knees', '3. 老廣場 Vieux carre'],
-        en: ['1. Black Sidecar Fizz', '2. Bee’s Knees', '3. Vieux Carre'],
+        en: ['1. Sloe Gin Fizz', '2. Bee’s Knees', '3. Vieux Carre'],
       },
     },
     b: {
@@ -149,7 +149,7 @@ const RESULTS = {
       title: { zh: '理性聰明的瓜', en: 'Clear-Minded Cucumber' },
       body: {
         zh: '決定你是誰的不是你的內心，而是你的行為。 \n\n你不輕易說話，卻什麼都看在心裡。 \n你冷靜、理性，善於用距離保護自己，也用觀察掌握全局。就跟蝙蝠俠一樣。',
-        en: 'What defines you isn’t your heart—it’s your actions. \n\nYou rarely speak, yet everything is in your heart. \nYou remain calm and rational, using distance to protect yourself and observation to grasp the whole picture—like Batman.',
+        en: 'What defines you isn’t your heart—it’s your actions. \n\nYou rarely speak, yet you keep every detail in mind. \nYou remain calm and rational, using distance to protect yourself and observation to grasp the whole picture—like Batman.',
       },
       callout: { zh: '霧中羅盤', en: 'Compass in the Fog' },
       stats: [
@@ -167,7 +167,7 @@ const RESULTS = {
       },
       recommendedCocktails: {
         zh: ['1. 嗨波 high ball', '2. 飛行 Avation', '3. 馬丁尼 Martini'],
-        en: ['1. High Ball', '2. Avation', '3. Martini'],
+        en: ['1. Highball', '2. Aviation', '3. Martini'],
       },
     },
   },
@@ -205,9 +205,9 @@ const RESULTS = {
       title: { zh: '起起落落的椒', en: 'Plot-Twist Pepper' },
       body: {
         zh: '人生就像一盒巧克力，你永遠不知道會拿到什麼。 \n\n你的人生總帶點高潮起伏，像在演電影。 \n你渴望深刻的感受，也甘願承擔情緒的重量。 \n平凡對你來說太無趣，有層次的活法才是你的追求。',
-        en: 'Life unfolds like a box of chocolates—you never know what you’ll get. \n\nYour life always has ups and downs, like a movie. \nYou crave deep feelings and are willing to bear the weight of emotions. \nBoring is too boring for you, a life with layers is your pursuit.',
+        en: 'Life unfolds like a box of chocolates—you never know what you’ll get. \n\nYour life always has ups and downs, like a movie. \nYou crave deep feelings and are willing to bear the weight of emotions. \nOrdinary feels dull to you; layered living is what you pursue.',
       },
-      callout: { zh: '戲劇張力', en: 'Dramatic Pulse' },
+      callout: { zh: '戲劇張力', en: 'Dramatic Tension' },
       stats: [
         { label: { zh: '情緒波幅', en: 'Emotional Waves' }, value: 92 },
         { label: { zh: '故事感', en: 'Story Arc' }, value: 88 },
@@ -223,7 +223,7 @@ const RESULTS = {
       },
       recommendedCocktails: {
         zh: ['1. 迪亞布羅 El Diablo', '2. 咖啡馬丁尼 Expresso Martini', '3. 內格羅尼 Negroni'],
-        en: ['1. El Diablo', '2. Expresso Martini', '3. Negroni'],
+        en: ['1. El Diablo', '2. Espresso Martini', '3. Negroni'],
       },
     },
   },
