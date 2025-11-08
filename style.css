@@ -333,6 +333,7 @@ body {
 
 .result-body-text {
   margin: 0;
+  white-space: pre-line;
 }
 
 .result-section {

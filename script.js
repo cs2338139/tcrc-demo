@@ -20,7 +20,7 @@ const LOADING_LABELS = {
 
 const SECTION_TITLES = {
   pairing: { zh: '搭配提醒', en: 'Pairing Reminders' },
-  tips: { zh: '溫馨提醒', en: 'Warm Reminder' },
+  recommendedCocktails: { zh: '推薦調酒', en: 'Recommended Cocktails' },
 };
 
 const INTRO_COPY = {
@@ -121,8 +121,8 @@ const RESULTS = {
       image: 'assets/result/kindcucumber.png',
       title: { zh: '單純善良的瓜', en: 'Pure-Hearted Cucumber' },
       body: {
-        zh: '你是個偏感受型的人。對你來說，安全感來自於「被理解」與「純淨的存在感」。你習慣觀察，願意用柔軟對待世界。你不是軟弱，只是你相信——柔和是一種力量。',
-        en: 'You lead with feeling. Security is born from being understood and sensing genuine presence. You observe first, and offer softness to the world—not out of weakness, but because you believe gentleness is its own power.',
+        zh: '你的善良必須有點鋒芒 \n\n你懂得照顧別人情緒，卻常常忘了自己也值得被照顧。生活亂七八糟，但你還是選擇相信世界。請記得學習好好善待自己。',
+        en: 'Your kindness must have a hint of edge. \n\nYou care for others’ feelings but often forget to care for yourself. Life is messy, but you still choose to believe in the world. Please remember to learn how to treat yourself well.',
       },
       callout: { zh: '柔和頻率', en: 'Gentle Frequency' },
       stats: [
@@ -138,9 +138,9 @@ const RESULTS = {
         zh: '芒果莎莎醬 x 青醬塔可，先喝再吃',
         en: 'Mango salsa x pesto taco, sip first then bite.',
       },
-      tips: {
-        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
-        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
+      recommendedCocktails: {
+        zh: ['1. 黑次李琴費士   Sloegin fizz', '2. 蜜蜂膝蓋Bee’s knees', '3. 老廣場 Vieux carre'],
+        en: ['1. Black Sidecar Fizz', '2. Bee’s Knees', '3. Vieux Carre'],
       },
     },
     b: {
@@ -148,8 +148,8 @@ const RESULTS = {
       image: 'assets/result/Smartcucumber.png',
       title: { zh: '理性聰明的瓜', en: 'Clear-Minded Cucumber' },
       body: {
-        zh: '你習慣自己走在霧中，帶著一點神秘、一點距離感。你不常主動吐露心事，但其實情緒很深。你不害怕孤獨，反而在混沌中找到了自己的秩序。',
-        en: "You navigate the fog on your own terms, carrying mystery and measured distance. You seldom open up first, yet your emotions run deep. Solitude doesn't scare you—you build your own order inside the haze.",
+        zh: '決定你是誰的不是你的內心，而是你的行為。 \n\n你不輕易說話，卻什麼都看在心裡。 \n你冷靜、理性，善於用距離保護自己，也用觀察掌握全局。就跟蝙蝠俠一樣。',
+        en: 'What defines you isn’t your heart—it’s your actions. \n\nYou rarely speak, yet everything is in your heart. \nYou remain calm and rational, using distance to protect yourself and observation to grasp the whole picture—like Batman.',
       },
       callout: { zh: '霧中羅盤', en: 'Compass in the Fog' },
       stats: [
@@ -165,9 +165,9 @@ const RESULTS = {
         zh: '芒果莎莎醬 x 青醬塔可，先喝再吃',
         en: 'Mango salsa x pesto taco, sip first then bite.',
       },
-      tips: {
-        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
-        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
+      recommendedCocktails: {
+        zh: ['1. 嗨波 high ball', '2. 飛行 Avation', '3. 馬丁尼 Martini'],
+        en: ['1. High Ball', '2. Avation', '3. Martini'],
       },
     },
   },
@@ -177,8 +177,8 @@ const RESULTS = {
       image: 'assets/result/livepepper.png',
       title: { zh: '熱烈追求的椒', en: 'Passion-Chaser Pepper' },
       body: {
-        zh: '你是活在五感裡的人，喜歡一切濃烈、真實的感覺。香氣、影像、情緒，通通要到位才行。你排斥無聊，追求刺激與情緒釋放，就算會燙傷也不願活得平淡。',
-        en: 'You live through every sense, craving what is bold and real. Scents, visuals, emotions—they all need to hit full force. You reject boredom and chase release, even if the spark might burn.',
+        zh: '這世界能給你的只是一場遊戲，你要贏，就得出界。 \n\n你渴望所有感官都被點燃。香氣、畫面、音樂、情緒，通通都要來真的。 \n別人覺得太多，你卻覺得剛好；你不要平淡，你只想活得像主角。',
+        en: 'This world gives you only a game—to win, you must break the rules. \n\nYou crave every sense to be ignited. Scents, visuals, music, emotions—they all need to be real. \nOthers think too much, but you think just right; you don’t want boring, you just want to live like a star.',
       },
       callout: { zh: '熱度指數', en: 'Heat Index' },
       stats: [
@@ -194,9 +194,9 @@ const RESULTS = {
         zh: '芒果莎莎醬 × 紅醬塔可，先吃再喝',
         en: 'Mango salsa × roja taco, bite first then sip.',
       },
-      tips: {
-        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
-        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
+      recommendedCocktails: {
+        zh: ['1. 查理·卓別林 Charlie Chaplin', '2. 血腥瑪麗 Bloody Mary', '3. 煙燻蘿希塔 Mezcal Rosita'],
+        en: ['1. Charlie Chaplin', '2. Bloody Mary', '3. Mezcal Rosita'],
       },
     },
     b: {
@@ -204,8 +204,8 @@ const RESULTS = {
       image: 'assets/result/upsetpepper.png',
       title: { zh: '起起落落的椒', en: 'Plot-Twist Pepper' },
       body: {
-        zh: '你的生活像一場戲，有情節、有伏筆、有情緒高潮。你討厭平淡，討厭模糊，你要的是那種「能被寫進劇本的故事」。你的感性很強，也可能過度反應，但也因此你總是讓人難以忘記。',
-        en: 'Life unfolds like a screenplay for you—foreshadowing, twists, and emotional peaks. You loathe the bland or blurry; you want moments worthy of a script. Your feelings run high, sometimes too high, and that’s exactly why no one forgets you.',
+        zh: '人生就像一盒巧克力，你永遠不知道會拿到什麼。 \n\n你的人生總帶點高潮起伏，像在演電影。 \n你渴望深刻的感受，也甘願承擔情緒的重量。 \n平凡對你來說太無趣，有層次的活法才是你的追求。',
+        en: 'Life unfolds like a box of chocolates—you never know what you’ll get. \n\nYour life always has ups and downs, like a movie. \nYou crave deep feelings and are willing to bear the weight of emotions. \nBoring is too boring for you, a life with layers is your pursuit.',
       },
       callout: { zh: '戲劇張力', en: 'Dramatic Pulse' },
       stats: [
@@ -221,9 +221,9 @@ const RESULTS = {
         zh: '芒果莎莎醬 × 紅醬塔可，先吃再喝',
         en: 'Mango salsa × roja taco, bite first then sip.',
       },
-      tips: {
-        zh: ['請告知服務人員結果畫面，如重新測驗，結果只能擇一。'],
-        en: ['Show this result to the staff; if you retake the quiz, only one outcome can be redeemed.'],
+      recommendedCocktails: {
+        zh: ['1. 迪亞布羅 El Diablo', '2. 咖啡馬丁尼 Expresso Martini', '3. 內格羅尼 Negroni'],
+        en: ['1. El Diablo', '2. Expresso Martini', '3. Negroni'],
       },
     },
   },
@@ -349,8 +349,8 @@ function renderResult() {
       `
     )
     .join('');
-  const tips = result.tips?.[state.language] ?? [];
-  const tipsHtml = tips.map((tip) => `<li>${tip}</li>`).join('');
+  const recommendedCocktails = result.recommendedCocktails?.[state.language] ?? [];
+  const recommendedCocktailsHtml = recommendedCocktails.map((tip) => `<li>${tip}</li>`).join('');
 
   screenContainer.innerHTML = `
     <article class="result-layout">
@@ -382,9 +382,9 @@ function renderResult() {
         <p class="result-section-text">${result.pairing[state.language]}</p>
       </section>
       <section class="result-section">
-        <h3 class="result-section-title">${SECTION_TITLES.tips[state.language]}</h3>
+        <h3 class="result-section-title">${SECTION_TITLES.recommendedCocktails[state.language]}</h3>
         <ul class="result-list">
-          ${tipsHtml}
+          ${recommendedCocktailsHtml}
         </ul>
       </section>
     </article>
